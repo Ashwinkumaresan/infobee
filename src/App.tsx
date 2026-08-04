@@ -229,18 +229,22 @@ export default function App() {
     }
   };
 
+  const isProfilePage = location.pathname.startsWith('/student/profile');
+
   return (
     <div className="min-h-screen bg-white text-gray-900 selection:bg-brand-orange selection:text-white antialiased">
       {/* Primary Navigation Header */}
-      <Header
-        onJoinClick={() => setIsJoinOpen(true)}
-        onAdminClick={() => setIsAdminOpen(true)}
-        isAdminMode={isAdminOpen}
-        isLoggedIn={isLoggedIn}
-        activeSection={activeSection}
-        currentPage={currentPage}
-        onNavigate={handleNavigatePage}
-      />
+      {!isProfilePage && (
+        <Header
+          onJoinClick={() => setIsJoinOpen(true)}
+          onAdminClick={() => setIsAdminOpen(true)}
+          isAdminMode={isAdminOpen}
+          isLoggedIn={isLoggedIn}
+          activeSection={activeSection}
+          currentPage={currentPage}
+          onNavigate={handleNavigatePage}
+        />
+      )}
 
       {/* Main Structural Page Flow */}
       <main>

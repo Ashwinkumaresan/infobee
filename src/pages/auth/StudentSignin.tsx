@@ -11,7 +11,7 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
 
   const handleSignIn = () => {
     if (setIsLoggedIn) setIsLoggedIn(true);
-    navigate('/student/profile');
+    navigate('/student/profile', { replace: true });
   };
 
   return (
@@ -83,7 +83,7 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
               <p className="text-[#594238]">Sign in to your Infobee account</p>
             </div>
             
-            <div className="space-y-4">
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleSignIn(); }}>
               <div className="flex flex-col gap-1.5">
                 <label 
                   className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'email' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
@@ -119,12 +119,12 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
               </div>
               
               <button 
+                type="submit"
                 className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-widest block-shadow transition-all hover:bg-[#a33e00] mt-4" 
-                onClick={handleSignIn}
               >
                 Sign In
               </button>
-            </div>
+            </form>
             
             <div className="pt-4 text-center">
               <p className="text-[#594238]">

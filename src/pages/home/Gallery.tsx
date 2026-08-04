@@ -247,11 +247,12 @@ export default function Gallery() {
 
       </div>
 
-      {/* Continuous Stacking Cards Scroll Container - Full Viewport Width & Height */}
-      <div ref={containerRef} className="relative w-full h-[300vh]">
-        {/* Sticky view frame matching full screen width and height */}
-        <div className="sticky top-0 w-full h-screen overflow-hidden bg-[#FAF9F6]">
-          {STORY_IMAGES.map((img, index) => {
+      {/* Continuous Stacking Cards Scroll Container - Constrained to Container Width */}
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div ref={containerRef} className="relative w-full h-[300vh]">
+          {/* Sticky view frame */}
+          <div className="sticky top-0 w-full h-[85vh] sm:h-screen overflow-hidden bg-[#FAF9F6] border border-gray-200 shadow-sm mb-16">
+            {STORY_IMAGES.map((img, index) => {
             return (
               <StackingCard
                 key={img.id}
@@ -266,6 +267,7 @@ export default function Gallery() {
             );
           })}
         </div>
+      </div>
       </div>
 
       {/* Lightbox Modal */}

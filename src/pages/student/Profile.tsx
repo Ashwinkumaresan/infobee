@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function StudentProfile() {
   const [activeTab, setActiveTab] = useState('Education History');
+  const navigate = useNavigate();
 
   const tabs = [
     'Personal Info',
@@ -12,7 +13,7 @@ export default function StudentProfile() {
   ];
 
   return (
-    <div className="pt-16 min-h-screen bg-[#fbf9f8] font-['Poppins',_sans-serif] text-[#1b1c1c]">
+    <div className="min-h-screen bg-[#fbf9f8] font-['Poppins',_sans-serif] text-[#1b1c1c]">
       <style>{`
         .block-shadow {
             box-shadow: 4px 4px 0px 0px rgba(27, 28, 28, 0.1);

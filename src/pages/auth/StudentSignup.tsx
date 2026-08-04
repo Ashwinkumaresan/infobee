@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function StudentSignup() {
   const [phase, setPhase] = useState(1);
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const goToPhase = (nextPhase: number) => {
     setPhase(nextPhase);
@@ -102,7 +103,7 @@ export default function StudentSignup() {
                 <p className="text-[#594238]">Enter your college email to get started</p>
               </div>
               
-              <div className="space-y-4">
+              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); goToPhase(2); }}>
                 <div className="flex flex-col gap-1.5">
                   <label 
                     className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'email' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
@@ -120,12 +121,12 @@ export default function StudentSignup() {
                   />
                 </div>
                 <button 
+                  type="submit"
                   className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-widest block-shadow transition-all hover:bg-[#a33e00]" 
-                  onClick={() => goToPhase(2)}
                 >
                   Send OTP
                 </button>
-              </div>
+              </form>
               
               <div className="pt-4 text-center">
                 <p className="text-[#594238]">
@@ -146,7 +147,7 @@ export default function StudentSignup() {
                 <p className="text-[#594238]">We've sent a code to your email address.</p>
               </div>
               
-              <div className="space-y-4">
+              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); goToPhase(3); }}>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12px] uppercase tracking-widest text-[#594238] font-bold text-center">
                     Enter 6-digit Code
@@ -163,18 +164,19 @@ export default function StudentSignup() {
                   </div>
                 </div>
                 <button 
+                  type="submit"
                   className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-widest block-shadow transition-all hover:bg-[#a33e00] mt-4" 
-                  onClick={() => goToPhase(3)}
                 >
                   Verify Code
                 </button>
                 <button 
+                  type="button"
                   className="w-full text-[#594238] text-sm font-bold uppercase tracking-wider py-2 hover:text-[#1b1c1c] transition-colors" 
                   onClick={() => goToPhase(1)}
                 >
                   Back to email
                 </button>
-              </div>
+              </form>
             </div>
           )}
 
@@ -186,7 +188,7 @@ export default function StudentSignup() {
                 <p className="text-[#594238]">Complete your profile to join the hive.</p>
               </div>
               
-              <div className="space-y-4">
+              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); navigate('/student/profile', { replace: true }); }}>
                 <div className="flex flex-col gap-1.5">
                   <label 
                     className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'fullname' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
@@ -233,12 +235,12 @@ export default function StudentSignup() {
                 </div>
                 
                 <button 
+                  type="submit"
                   className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-widest block-shadow transition-all hover:bg-[#a33e00] mt-4"
-                  onClick={() => alert('Account created successfully!')}
                 >
                   Complete Setup
                 </button>
-              </div>
+              </form>
             </div>
           )}
         </div>

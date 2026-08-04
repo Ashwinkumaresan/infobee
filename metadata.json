@@ -1,0 +1,6 @@
+{
+  "name": "Infobee - IT Student Association",
+  "description": "The official web platform for Infobee, the student-run IT community of Dr. Mahalingam College of Engineering and Technology. Explore events, bootcamps, and technical symposiums.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

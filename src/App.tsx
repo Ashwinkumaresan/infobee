@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './pages/home';
 import ResearchPapers from './pages/research/ResearchPapers';
@@ -251,6 +251,10 @@ export default function App() {
       {/* Main Structural Page Flow */}
       <main>
         <Routes>
+          <Route path="/portfolio" element={<PortfolioLanding />} />
+          <Route path="*" element={<Navigate to="/portfolio" replace />} />
+          
+          {/* TEMPORARILY DISABLED: 
           <Route 
             path="/" 
             element={
@@ -265,10 +269,10 @@ export default function App() {
           />
           <Route path="/research" element={<ResearchPapers />} />
           <Route path="/research/:paperId" element={<Detail />} />
-          <Route path="/portfolio" element={<PortfolioLanding />} />
           <Route path="/student/signup" element={<StudentSignup />} />
           <Route path="/student/signin" element={<StudentSignin setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/student/profile" element={<StudentProfile />} />
+          */}
         </Routes>
       </main>
 

@@ -449,13 +449,29 @@ export default function PortfolioLanding() {
         </section>
 
         {/* 7. Closing CTA */}
-        <section className="py-24 px-6 bg-primary-container text-on-primary-container text-center border-t border-outline" id="submit">
-          <div className="max-w-3xl mx-auto">
+        <section className="relative py-24 px-6 bg-primary-container text-on-primary-container text-center border-t border-outline overflow-hidden" id="submit">
+          
+          {/* Professional Coming Soon Overlay */}
+          <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-md bg-black/5">
+            <div className="bg-surface/95 backdrop-blur-xl border border-outline px-12 py-8 rounded-3xl shadow-2xl flex flex-col items-center gap-3 transform transition-all hover:scale-[1.02]">
+              <div className="w-12 h-12 bg-brand-orange/10 rounded-full flex items-center justify-center mb-2">
+                <span className="material-symbols-outlined text-brand-orange text-2xl">update</span>
+              </div>
+              <span className="font-headline text-3xl font-bold text-on-surface uppercase tracking-widest">
+                Coming Soon
+              </span>
+              <p className="font-body text-base text-on-surface-variant max-w-xs">
+                The portfolio submission portal will open soon. Get your projects ready!
+              </p>
+            </div>
+          </div>
+
+          <div className="relative max-w-3xl mx-auto select-none pointer-events-none">
             <h2 className="font-display text-white text-[clamp(2rem,4vw,3rem)] font-bold leading-tight tracking-tight uppercase mb-8">
               Ready to submit your portfolio?
             </h2>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <button className="bg-surface text-primary-container font-headline font-bold uppercase tracking-wider px-8 py-4 border border-outline shadow-solid hover:shadow-none hover:-translate-x-px hover:-translate-y-px transition-all duration-200 w-full sm:w-auto">
+              <button className="bg-surface text-primary-container font-headline font-bold uppercase tracking-wider px-8 py-4 border border-outline opacity-70 w-full sm:w-auto" disabled>
                 Submit Your Portfolio
               </button>
             </div>

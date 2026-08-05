@@ -377,11 +377,11 @@ export default function PortfolioLanding() {
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-surface-container-highest border border-outline flex items-center justify-center"></div>
-                    <span className="font-headline text-lg font-bold uppercase">Hand-written code</span>
+                    <span className="font-headline text-lg font-bold uppercase">Code</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-surface-container-highest border border-outline flex items-center justify-center"></div>
-                    <span className="font-headline text-lg font-bold uppercase">3+ real projects</span>
+                    <span className="font-headline text-lg font-bold uppercase">Any projects done</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-surface-container-highest border border-outline flex items-center justify-center"></div>

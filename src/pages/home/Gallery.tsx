@@ -158,7 +158,7 @@ function StackingCard({ img, index, total, copiedId, handleShare, setSelectedIma
               "{img.caption}"
             </p>
 
-            <div className="flex gap-3 w-full sm:w-auto">
+            {/* <div className="flex gap-3 w-full sm:w-auto">
               <button
                 onClick={(e) => handleShare(img.id, e)}
                 className="flex-1 sm:flex-initial bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 text-xs font-mono tracking-wider uppercase rounded-none transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-xs"
@@ -183,7 +183,7 @@ function StackingCard({ img, index, total, copiedId, handleShare, setSelectedIma
                 <ZoomIn className="w-3.5 h-3.5" />
                 <span>EXPAND</span>
               </button>
-            </div>
+            </div> */}
           </div>
 
         </div>

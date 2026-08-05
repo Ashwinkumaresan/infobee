@@ -9,8 +9,8 @@ interface HeaderProps {
   isAdminMode: boolean;
   isLoggedIn?: boolean;
   activeSection: string;
-  currentPage?: 'home' | 'research';
-  onNavigate?: (page: 'home' | 'research', sectionId?: string) => void;
+  currentPage?: 'home' | 'research' | 'portfolio';
+  onNavigate?: (page: 'home' | 'research' | 'portfolio', sectionId?: string) => void;
 }
 
 export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLoggedIn, activeSection, currentPage = 'home', onNavigate }: HeaderProps) {
@@ -24,6 +24,7 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
     { name: 'ABOUT', href: '#about' },
     { name: 'GALLERY', href: '#gallery' },
     { name: 'PROGRAMS', href: '#programs' },
+    { name: 'PORTFOLIO', href: '#portfolio' },
     { name: 'CONTACT', href: '#contact' },
   ];
 
@@ -47,6 +48,13 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
     if (href === '#research') {
       if (onNavigate) {
         onNavigate('research');
+      }
+      return;
+    }
+
+    if (href === '#portfolio') {
+      if (onNavigate) {
+        onNavigate('portfolio');
       }
       return;
     }
@@ -120,14 +128,14 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
             {isLoggedIn ? (
               <Link
                 to="/student/profile"
-                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-wider px-5 py-2.5 rounded-sm uppercase shadow-sm transition-all hover:shadow-md transform hover:-translate-y-0.5"
+                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-wider px-5 py-2.5 uppercase shadow-sm transition-all hover:shadow-md transform hover:-translate-y-0.5"
               >
                 Profile
               </Link>
             ) : (
               <Link
                 to="/student/signin"
-                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-wider px-5 py-2.5 rounded-sm uppercase shadow-sm transition-all hover:shadow-md transform hover:-translate-y-0.5"
+                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-wider px-5 py-2.5 uppercase shadow-sm transition-all hover:shadow-md transform hover:-translate-y-0.5"
               >
                 Sign In
               </Link>

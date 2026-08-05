@@ -9,18 +9,27 @@ export default function Programs() {
 
   return (
     <section id="programs" className="relative pt-36 pb-28 text-gray-900 bg-[#F4F1ED] overflow-hidden">
-      {/* Sharp V-Cut Background */}
-      <div 
-        className="absolute inset-0 bg-[#FAF9F6] z-0" 
-        style={{ clipPath: 'polygon(0 0, 50% 40px, 100% 0, 100% 100%, 0 100%)' }}
-      />
+      {/* Professional Grid Pattern Background */}
+      <div className="absolute inset-0 bg-[#FAF9F6] z-0">
+        {/* The Grid */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)',
+            backgroundSize: '3.5rem 3.5rem',
+            opacity: 0.7
+          }}
+        />
+        {/* Fading Mask */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF9F6] via-transparent to-[#FAF9F6] pointer-events-none" />
+      </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-20 space-y-2">
           <span className="text-xs font-bold font-mono tracking-widest text-[#f06c25] uppercase">
-            // PROGRAMS CONDUCTED
+           PROGRAMS CONDUCTED
           </span>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight mt-2 mb-4">
             Sharpening the Next Generation
@@ -32,84 +41,82 @@ export default function Programs() {
         <div className="space-y-24 sm:space-y-32">
           
           {/* Program 1: Coding Bootcamps */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            {/* Image column */}
-            <div className="lg:col-span-7">
-              <div 
-                className="bg-white p-3 shadow-xl rounded-xs border border-gray-100"
-                style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 32px), calc(100% - 32px) 100%, 0 100%)' }}
-              >
+          <div className="relative overflow-hidden bg-white border border-gray-200 p-8 lg:p-12 shadow-sm hover:shadow-md transition-shadow">
+            {/* Decorative Color Pattern */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#f06c25] opacity-[0.08] rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+            <div 
+              className="absolute inset-0 pointer-events-none opacity-[0.04]"
+              style={{ backgroundImage: 'radial-gradient(#f06c25 2px, transparent 2px)', backgroundSize: '24px 24px' }}
+            />
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Image column */}
+              <div className="lg:col-span-7">
                 <img
                   src={programsData[0].image}
                   alt="Coding Bootcamps"
-                  className="w-full aspect-[16/10] object-cover"
-                  style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%)' }}
+                  className="w-full aspect-[16/10] object-cover shadow-md"
                   referrerPolicy="no-referrer"
                 />
               </div>
-            </div>
 
-            {/* Text column */}
-            <div className="lg:col-span-5 space-y-6">
-              <div 
-                className="w-12 h-12 bg-[#f06c25] flex items-center justify-center text-white shadow-lg"
-                style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%)' }}
-              >
-                <BookOpen className="w-5 h-5" />
+              {/* Text column */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="w-12 h-12 bg-[#f06c25] flex items-center justify-center text-white shadow-lg">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <h3 className="font-display text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                  Coding Bootcamps
+                </h3>
+                <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-light">
+                  Intensive, project-based learning tracks focused on modern stacks like MERN, DevOps, and Machine Learning.
+                  Designed to bridge the gap between curriculum and industry demands.
+                </p>
+                <button
+                  onClick={() => setSelectedProgram(programsData[0])}
+                  className="inline-flex items-center space-x-2 text-xs font-bold font-mono tracking-widest text-[#f06c25] hover:text-[#f06c25]/80 transition-colors uppercase group"
+                >
+                  <span>LEARN MORE</span>
+                  <ArrowRight className="w-4 h-4 transform transition-transform group-hover:translate-x-1" />
+                </button>
               </div>
-              <h3 className="font-display text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-                Coding Bootcamps
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-light">
-                Intensive, project-based learning tracks focused on modern stacks like MERN, DevOps, and Machine Learning.
-                Designed to bridge the gap between curriculum and industry demands.
-              </p>
-              <button
-                onClick={() => setSelectedProgram(programsData[0])}
-                className="inline-flex items-center space-x-2 text-xs font-bold font-mono tracking-widest text-[#f06c25] hover:text-[#f06c25]/80 transition-colors uppercase group"
-              >
-                <span>LEARN MORE</span>
-                <ArrowRight className="w-4 h-4 transform transition-transform group-hover:translate-x-1" />
-              </button>
             </div>
           </div>
 
           {/* Program 2: Technical Symposiums */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            {/* Text column */}
-            <div className="lg:col-span-5 space-y-6 order-2 lg:order-1">
-              <div 
-                className="w-12 h-12 bg-[#f06c25] flex items-center justify-center text-white shadow-lg"
-                style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%)' }}
-              >
-                <Award className="w-5 h-5" />
+          <div className="relative overflow-hidden bg-white border border-gray-200 p-8 lg:p-12 shadow-sm hover:shadow-md transition-shadow">
+            {/* Decorative Color Pattern */}
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#f06c25] opacity-[0.08] rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
+            <div 
+              className="absolute inset-0 pointer-events-none opacity-[0.04]"
+              style={{ backgroundImage: 'radial-gradient(#f06c25 2px, transparent 2px)', backgroundSize: '24px 24px' }}
+            />
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Text column */}
+              <div className="lg:col-span-5 space-y-6 order-2 lg:order-1">
+                <div className="w-12 h-12 bg-[#f06c25] flex items-center justify-center text-white shadow-lg">
+                  <Award className="w-5 h-5" />
+                </div>
+                <h3 className="font-display text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                  Technical Symposiums
+                </h3>
+                <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-light">
+                  Annual flagship events featuring paper presentations, technical quizzes, and project expos that challenge the limits of student innovation.
+                </p>
+                <button
+                  onClick={() => setSelectedProgram(programsData[1])}
+                  className="inline-flex items-center space-x-2 text-xs font-bold font-mono tracking-widest text-[#f06c25] hover:text-[#f06c25]/80 transition-colors uppercase group"
+                >
+                  <span>LEARN MORE</span>
+                  <ArrowRight className="w-4 h-4 transform transition-transform group-hover:translate-x-1" />
+                </button>
               </div>
-              <h3 className="font-display text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-                Technical Symposiums
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-light">
-                Annual flagship events featuring paper presentations, technical quizzes, and project expos that challenge the limits of student innovation.
-              </p>
-              <button
-                onClick={() => setSelectedProgram(programsData[1])}
-                className="inline-flex items-center space-x-2 text-xs font-bold font-mono tracking-widest text-[#f06c25] hover:text-[#f06c25]/80 transition-colors uppercase group"
-              >
-                <span>LEARN MORE</span>
-                <ArrowRight className="w-4 h-4 transform transition-transform group-hover:translate-x-1" />
-              </button>
-            </div>
 
-            {/* Image column */}
-            <div className="lg:col-span-7 order-1 lg:order-2">
-              <div 
-                className="bg-white p-3 shadow-xl rounded-xs border border-gray-100"
-                style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 32px), calc(100% - 32px) 100%, 0 100%)' }}
-              >
+              {/* Image column */}
+              <div className="lg:col-span-7 order-1 lg:order-2">
                 <img
                   src={programsData[1].image}
                   alt="Technical Symposiums"
-                  className="w-full aspect-[16/10] object-cover"
-                  style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%)' }}
+                  className="w-full aspect-[16/10] object-cover shadow-md"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -117,44 +124,43 @@ export default function Programs() {
           </div>
 
           {/* Program 3: Industry Talks */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            {/* Image column */}
-            <div className="lg:col-span-7">
-              <div 
-                className="bg-white p-3 shadow-xl rounded-xs border border-gray-100"
-                style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 32px), calc(100% - 32px) 100%, 0 100%)' }}
-              >
+          <div className="relative overflow-hidden bg-white border border-gray-200 p-8 lg:p-12 shadow-sm hover:shadow-md transition-shadow">
+            {/* Decorative Color Pattern */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#f06c25] opacity-[0.05] rounded-full blur-3xl pointer-events-none" />
+            <div 
+              className="absolute inset-0 pointer-events-none opacity-[0.04]"
+              style={{ backgroundImage: 'radial-gradient(#f06c25 2px, transparent 2px)', backgroundSize: '24px 24px' }}
+            />
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Image column */}
+              <div className="lg:col-span-7">
                 <img
                   src={programsData[2].image}
                   alt="Industry Talks"
-                  className="w-full aspect-[16/10] object-cover"
-                  style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%)' }}
+                  className="w-full aspect-[16/10] object-cover shadow-md"
                   referrerPolicy="no-referrer"
                 />
               </div>
-            </div>
 
-            {/* Text column */}
-            <div className="lg:col-span-5 space-y-6">
-              <div 
-                className="w-12 h-12 bg-[#f06c25] flex items-center justify-center text-white shadow-lg"
-                style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%)' }}
-              >
-                <Users className="w-5 h-5" />
+              {/* Text column */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="w-12 h-12 bg-[#f06c25] flex items-center justify-center text-white shadow-lg">
+                  <Users className="w-5 h-5" />
+                </div>
+                <h3 className="font-display text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                  Industry Talks
+                </h3>
+                <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-light">
+                  Direct interaction with tech leaders from Fortune 500 companies, providing students with critical insights into career paths and emerging tech trends.
+                </p>
+                <button
+                  onClick={() => setSelectedProgram(programsData[2])}
+                  className="inline-flex items-center space-x-2 text-xs font-bold font-mono tracking-widest text-[#f06c25] hover:text-[#f06c25]/80 transition-colors uppercase group"
+                >
+                  <span>LEARN MORE</span>
+                  <ArrowRight className="w-4 h-4 transform transition-transform group-hover:translate-x-1" />
+                </button>
               </div>
-              <h3 className="font-display text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-                Industry Talks
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-light">
-                Direct interaction with tech leaders from Fortune 500 companies, providing students with critical insights into career paths and emerging tech trends.
-              </p>
-              <button
-                onClick={() => setSelectedProgram(programsData[2])}
-                className="inline-flex items-center space-x-2 text-xs font-bold font-mono tracking-widest text-[#f06c25] hover:text-[#f06c25]/80 transition-colors uppercase group"
-              >
-                <span>LEARN MORE</span>
-                <ArrowRight className="w-4 h-4 transform transition-transform group-hover:translate-x-1" />
-              </button>
             </div>
           </div>
 

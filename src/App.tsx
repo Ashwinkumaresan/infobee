@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Home from './pages/home';
 import ResearchPapers from './pages/research/ResearchPapers';
 import Detail from './pages/research/Detail';
+import PortfolioLanding from './pages/portfolio/Portfolio';
 import Footer from './components/Footer';
 import { CalendarModal, JoinModal } from './components/Modals';
 import AdminPortal from './components/AdminPortal';
@@ -16,7 +17,7 @@ import { eventsData } from './data';
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const currentPage = location.pathname.startsWith('/research') ? 'research' : 'home';
+  const currentPage = location.pathname.startsWith('/research') ? 'research' : location.pathname.startsWith('/portfolio') ? 'portfolio' : 'home';
   const isAuthPage = location.pathname.startsWith('/student/signin') || location.pathname.startsWith('/student/signup');
   const [activeSection, setActiveSection] = useState('home');
   const [isJoinOpen, setIsJoinOpen] = useState(false);
@@ -194,10 +195,10 @@ export default function App() {
     setContactSubmissions((prev) => prev.filter((sub) => sub.id !== submissionId));
   };
 
-  const handleNavigatePage = (page: 'home' | 'research', sectionId?: string) => {
-    if (page === 'research') {
-      navigate('/research');
-      setActiveSection('research');
+  const handleNavigatePage = (page: 'home' | 'research' | 'portfolio', sectionId?: string) => {
+    if (page === 'research' || page === 'portfolio') {
+      navigate(`/${page}`);
+      setActiveSection(page);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -230,11 +231,12 @@ export default function App() {
   };
 
   const isProfilePage = location.pathname.startsWith('/student/profile');
+  const isPortfolioPage = location.pathname.startsWith('/portfolio');
 
   return (
     <div className="min-h-screen bg-white text-gray-900 selection:bg-brand-orange selection:text-white antialiased">
       {/* Primary Navigation Header */}
-      {!isProfilePage && (
+      {!isProfilePage && !isPortfolioPage && (
         <Header
           onJoinClick={() => setIsJoinOpen(true)}
           onAdminClick={() => setIsAdminOpen(true)}
@@ -263,6 +265,7 @@ export default function App() {
           />
           <Route path="/research" element={<ResearchPapers />} />
           <Route path="/research/:paperId" element={<Detail />} />
+          <Route path="/portfolio" element={<PortfolioLanding />} />
           <Route path="/student/signup" element={<StudentSignup />} />
           <Route path="/student/signin" element={<StudentSignin setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/student/profile" element={<StudentProfile />} />
@@ -270,7 +273,7 @@ export default function App() {
       </main>
 
       {/* Footer Block */}
-      {!isAuthPage && (
+      {!isAuthPage && !isPortfolioPage && (
         <Footer
           onNavClick={(selector) => {
             if (selector === '#research') {

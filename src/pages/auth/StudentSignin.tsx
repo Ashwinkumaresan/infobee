@@ -15,9 +15,9 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center font-['Poppins',_sans-serif] p-4 bg-white overflow-x-hidden">
+    <div className="min-h-screen flex items-center justify-center font-sans p-4 bg-white overflow-x-hidden">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800;900&family=JetBrains+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
         
         .tessellation-bg {
             position: fixed;

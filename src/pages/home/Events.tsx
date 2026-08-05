@@ -132,7 +132,7 @@ export default function Events({
                     {/* Coming Soon Overlay */}
                     {feature.id !== 'research' && (
                       <div className="absolute inset-0 bg-white/50 backdrop-blur-[4px] z-50 flex items-center justify-center transition-all duration-300">
-                        <div className="bg-white px-6 py-2.5 rounded-full border border-gray-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center gap-2.5">
+                        <div className="bg-white px-6 py-2.5 border border-gray-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center gap-2.5">
                           <Clock className="w-4 h-4 text-gray-400" />
                           <span className="text-gray-600 font-medium text-sm tracking-wide">
                             Coming Soon

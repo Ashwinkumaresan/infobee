@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://YOUR_MILESWEB_DOMAIN.com/api/$1"
+      "destination": "https://api.infobee.sasalemsuperservice.com/api/$1"
     },
     {
       "source": "/(.*)",

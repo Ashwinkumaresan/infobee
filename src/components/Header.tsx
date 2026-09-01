@@ -83,13 +83,7 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
           {/* Logo */}
           <a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="flex items-center space-x-2 group">
             {/* Logo Geometric Origami Fold */}
-            <div className="relative w-9 h-9 bg-brand-orange rounded-md flex items-center justify-center overflow-hidden shadow-sm transition-transform group-hover:scale-105">
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-brand-orange to-amber-500 opacity-90" />
-              {/* Geometric fold line inside */}
-              <svg className="w-6 h-6 text-white relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18M12 3l9 9-9 9-9-9 9-9z" />
-              </svg>
-            </div>
+            <img src="./Logo.jpg" alt="Infobee Logo" className="w-12 h-12" />
             <div className="flex flex-col">
               <span className="font-display text-xl font-bold tracking-tight text-gray-900 leading-none group-hover:text-brand-orange transition-colors">
                 Infobee

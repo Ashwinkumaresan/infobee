@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-
 import Header from './components/Header';
 import Home from './pages/home';
 import ResearchPapers from './pages/research/ResearchPapers';
+import SubmitPaper from './pages/research/SubmitPaper';
 import Detail from './pages/research/Detail';
 import PortfolioLanding from './pages/portfolio/Portfolio';
 import Footer from './components/Footer';
@@ -10,23 +11,31 @@ import { CalendarModal, JoinModal } from './components/Modals';
 import AdminPortal from './components/AdminPortal';
 import StudentSignup from './pages/auth/StudentSignup';
 import StudentSignin from './pages/auth/StudentSignin';
+import StaffSignin from './pages/auth/StaffSignin';
 import StudentProfile from './pages/student/Profile';
+import StaffProfile from './pages/staff/StaffProfile';
+import StudentDetail from './pages/staff/StudentDetail';
+import ExportData from './pages/staff/ExportData';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import EventGallery from './pages/gallery/EventGallery';
 import { JoinRequest, ContactSubmission } from './types';
 import { eventsData } from './data';
+import { Toaster } from 'react-hot-toast';
 
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const currentPage = location.pathname.startsWith('/research') ? 'research' : location.pathname.startsWith('/portfolio') ? 'portfolio' : 'home';
-  const isAuthPage = location.pathname.startsWith('/student/signin') || location.pathname.startsWith('/student/signup');
+  const currentPage = location.pathname.startsWith('/research') ? 'research' : location.pathname.startsWith('/portfolio') ? 'portfolio' : location.pathname.startsWith('/gallery') ? 'gallery' : 'home';
+  const isAuthPage = location.pathname.startsWith('/student/signin') || location.pathname.startsWith('/student/signup') || location.pathname.startsWith('/forgot-password') || location.pathname.startsWith('/staff/signin');
   const [activeSection, setActiveSection] = useState('home');
   const [isJoinOpen, setIsJoinOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   
-  // Basic mock auth state
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  // Read auth state from cookie
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return document.cookie.includes('access_token=');
+  });
 
   // Persistence State Managers backed by LocalStorage
   const [registeredEventIds, setRegisteredEventIds] = useState<string[]>(() => {
@@ -119,10 +128,15 @@ export default function App() {
     localStorage.setItem('infobee_contact_submissions', JSON.stringify(contactSubmissions));
   }, [contactSubmissions]);
 
+  // Scroll to top on route change instantly (no visual scrolling effect)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [location.pathname]);
+
   // Sync activeSection when page changes
   useEffect(() => {
-    if (currentPage === 'research') {
-      setActiveSection('research');
+    if (currentPage === 'research' || currentPage === 'portfolio' || currentPage === 'gallery') {
+      setActiveSection(currentPage);
     }
   }, [currentPage]);
 
@@ -195,11 +209,11 @@ export default function App() {
     setContactSubmissions((prev) => prev.filter((sub) => sub.id !== submissionId));
   };
 
-  const handleNavigatePage = (page: 'home' | 'research' | 'portfolio', sectionId?: string) => {
-    if (page === 'research' || page === 'portfolio') {
+  const handleNavigatePage = (page: 'home' | 'research' | 'portfolio' | 'gallery', sectionId?: string) => {
+    if (page === 'research' || page === 'portfolio' || page === 'gallery') {
       navigate(`/${page}`);
       setActiveSection(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'instant' });
       return;
     }
 
@@ -230,13 +244,34 @@ export default function App() {
     }
   };
 
-  const isProfilePage = location.pathname.startsWith('/student/profile');
+  const isProfilePage = location.pathname.startsWith('/student/profile') || location.pathname.startsWith('/staff/profile') || location.pathname.startsWith('/staff/student') || location.pathname.startsWith('/staff/export');
   const isPortfolioPage = location.pathname.startsWith('/portfolio');
 
   return (
     <div className="min-h-screen bg-white text-gray-900 selection:bg-brand-orange selection:text-white antialiased">
+      <Toaster 
+        position="top-center" 
+        toastOptions={{
+          style: {
+            borderRadius: '0',
+            border: '2px solid #8d7166',
+            background: '#ffffff',
+            color: '#333',
+            boxShadow: '4px 4px 0px #8d7166',
+            fontWeight: 'bold',
+            fontFamily: 'sans-serif'
+          },
+          success: {
+            iconTheme: {
+              primary: '#f46b24',
+              secondary: '#ffffff',
+            },
+          },
+        }} 
+      />
+      
       {/* Primary Navigation Header */}
-      {!isProfilePage && !isPortfolioPage && (
+      {!isProfilePage && !isAuthPage && (
         <Header
           onJoinClick={() => setIsJoinOpen(true)}
           onAdminClick={() => setIsAdminOpen(true)}
@@ -251,10 +286,6 @@ export default function App() {
       {/* Main Structural Page Flow */}
       <main>
         <Routes>
-          <Route path="/portfolio" element={<PortfolioLanding />} />
-          <Route path="*" element={<Navigate to="/portfolio" replace />} />
-          
-          {/* TEMPORARILY DISABLED: 
           <Route 
             path="/" 
             element={
@@ -268,20 +299,32 @@ export default function App() {
             } 
           />
           <Route path="/research" element={<ResearchPapers />} />
+          <Route path="/research/submit" element={<SubmitPaper />} />
           <Route path="/research/:paperId" element={<Detail />} />
+          <Route path="/portfolio" element={<PortfolioLanding />} />
+          <Route path="/gallery" element={<EventGallery />} />
           <Route path="/student/signup" element={<StudentSignup />} />
           <Route path="/student/signin" element={<StudentSignin setIsLoggedIn={setIsLoggedIn} />} />
+          <Route path="/staff/signin" element={<StaffSignin setIsLoggedIn={setIsLoggedIn} />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/student/profile" element={<StudentProfile />} />
-          */}
+          <Route path="/staff/profile/:tab?" element={<StaffProfile />} />
+          <Route path="/staff/student/:rollNo" element={<StudentDetail />} />
+          <Route path="/staff/export" element={<ExportData />} />
+          
+          {/* Catch-all route to redirect unknown paths to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
       {/* Footer Block */}
-      {!isAuthPage && !isPortfolioPage && (
+      {!isAuthPage && !isPortfolioPage && !isProfilePage && (
         <Footer
           onNavClick={(selector) => {
             if (selector === '#research') {
               handleNavigatePage('research');
+            } else if (selector === '#gallery') {
+              handleNavigatePage('gallery');
             } else {
               handleNavigatePage('home', selector.replace('#', ''));
             }

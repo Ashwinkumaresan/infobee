@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://YOUR_MILESWEB_DOMAIN.com/api/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

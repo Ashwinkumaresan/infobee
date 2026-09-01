@@ -9,23 +9,21 @@ interface HeaderProps {
   isAdminMode: boolean;
   isLoggedIn?: boolean;
   activeSection: string;
-  currentPage?: 'home' | 'research' | 'portfolio';
-  onNavigate?: (page: 'home' | 'research' | 'portfolio', sectionId?: string) => void;
+  currentPage?: 'home' | 'research' | 'portfolio' | 'gallery';
+  onNavigate?: (page: 'home' | 'research' | 'portfolio' | 'gallery', sectionId?: string) => void;
 }
 
 export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLoggedIn, activeSection, currentPage = 'home', onNavigate }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const userRole = localStorage.getItem('user_role');
+  const profileRoute = userRole === 'staff' ? '/staff/profile' : '/student/profile';
 
   const navItems = [
     { name: 'HOME', href: '#home' },
     { name: 'RESEARCH', href: '#research' },
-    { name: 'EXPLORE', href: '#events' },
-    { name: 'ABOUT', href: '#about' },
-    { name: 'GALLERY', href: '#gallery' },
-    { name: 'PROGRAMS', href: '#programs' },
     { name: 'PORTFOLIO', href: '#portfolio' },
-    { name: 'CONTACT', href: '#contact' },
+    { name: 'GALLERY', href: '/gallery' },
   ];
 
   useEffect(() => {
@@ -55,6 +53,13 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
     if (href === '#portfolio') {
       if (onNavigate) {
         onNavigate('portfolio');
+      }
+      return;
+    }
+
+    if (href === '/gallery') {
+      if (onNavigate) {
+        onNavigate('gallery');
       }
       return;
     }
@@ -127,7 +132,7 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
           <div className="hidden md:flex items-center space-x-3">
             {isLoggedIn ? (
               <Link
-                to="/student/profile"
+                to={profileRoute}
                 className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-wider px-5 py-2.5 uppercase shadow-sm transition-all hover:shadow-md transform hover:-translate-y-0.5"
               >
                 Profile
@@ -142,11 +147,26 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center space-x-2">
+          {/* Mobile Menu Button and Actions */}
+          <div className="flex md:hidden items-center space-x-3">
+            {isLoggedIn ? (
+              <Link
+                to={profileRoute}
+                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-[10px] font-bold tracking-wider px-4 py-2 uppercase shadow-sm transition-all"
+              >
+                Profile
+              </Link>
+            ) : (
+              <Link
+                to="/student/signin"
+                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-[10px] font-bold tracking-wider px-4 py-2 uppercase shadow-sm transition-all"
+              >
+                Sign In
+              </Link>
+            )}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-sm text-gray-600 hover:text-brand-orange hover:bg-gray-50 transition-colors"
+              className="p-1 rounded-sm text-gray-600 hover:text-brand-orange hover:bg-gray-50 transition-colors"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -181,25 +201,7 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
                   </a>
                 );
               })}
-              <div className="pt-4 flex flex-col space-y-2 px-3">
-                {isLoggedIn ? (
-                  <Link
-                    to="/student/profile"
-                    onClick={() => setIsOpen(false)}
-                    className="w-full bg-brand-orange text-white text-center py-3 rounded-sm font-bold tracking-wider text-sm uppercase shadow-sm block"
-                  >
-                    Profile
-                  </Link>
-                ) : (
-                  <Link
-                    to="/student/signin"
-                    onClick={() => setIsOpen(false)}
-                    className="w-full bg-brand-orange text-white text-center py-3 rounded-sm font-bold tracking-wider text-sm uppercase shadow-sm block"
-                  >
-                    Sign In
-                  </Link>
-                )}
-              </div>
+
             </div>
           </motion.div>
         )}

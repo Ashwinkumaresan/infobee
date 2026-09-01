@@ -16,9 +16,9 @@ export default function Hero({ onExploreEventsClick, onLearnMoreClick }: HeroPro
       <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none bg-white">
         <div className="absolute inset-0 flex justify-center items-center w-full h-full gap-4 md:gap-6 px-4 md:px-8">
           {/* Panel 1: Far Left Slanted Rectangle */}
-          <div 
+          <div
             className="hidden md:block relative w-[18%] md:w-[22%] h-[125%] flex-shrink-0 overflow-hidden shadow-xs border-r border-gray-100/50"
-            style={{ 
+            style={{
               transform: 'skewX(14deg)',
               willChange: 'transform'
             }}
@@ -36,9 +36,9 @@ export default function Hero({ onExploreEventsClick, onLearnMoreClick }: HeroPro
           </div>
 
           {/* Panel 2: Mid Left Slanted Rectangle */}
-          <div 
+          <div
             className="relative w-[44%] md:w-[26%] h-[125%] flex-shrink-0 overflow-hidden shadow-sm border-r border-gray-100/50"
-            style={{ 
+            style={{
               transform: 'skewX(14deg)',
               willChange: 'transform'
             }}
@@ -55,9 +55,9 @@ export default function Hero({ onExploreEventsClick, onLearnMoreClick }: HeroPro
           </div>
 
           {/* Panel 3: Mid Right Slanted Rectangle */}
-          <div 
+          <div
             className="relative w-[44%] md:w-[26%] h-[125%] flex-shrink-0 overflow-hidden shadow-sm border-r border-gray-100/50"
-            style={{ 
+            style={{
               transform: 'skewX(14deg)',
               willChange: 'transform'
             }}
@@ -74,9 +74,9 @@ export default function Hero({ onExploreEventsClick, onLearnMoreClick }: HeroPro
           </div>
 
           {/* Panel 4: Far Right Slanted Rectangle */}
-          <div 
+          <div
             className="hidden md:block relative w-[18%] md:w-[22%] h-[125%] flex-shrink-0 overflow-hidden shadow-xs"
-            style={{ 
+            style={{
               transform: 'skewX(14deg)',
               willChange: 'transform'
             }}
@@ -149,7 +149,7 @@ export default function Hero({ onExploreEventsClick, onLearnMoreClick }: HeroPro
           >
             Explore Events
           </button>
-          
+
           <button
             onClick={onLearnMoreClick}
             className="w-full sm:w-auto bg-[#F0EEEE] hover:bg-gray-100 text-gray-900 text-xs font-bold tracking-widest px-8 py-4.5 rounded-none uppercase border border-black border-[1.5px] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"

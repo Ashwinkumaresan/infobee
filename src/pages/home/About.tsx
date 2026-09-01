@@ -52,7 +52,7 @@ export default function About({ onExploreEventsClick }: AboutProps) {
   ];
 
   return (
-    <section id="about" className="py-24 bg-white border-b border-gray-100 overflow-hidden relative">
+    <section id="about" className="py-10 sm:py-16 bg-white border-b border-neutral-100 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
@@ -64,8 +64,8 @@ export default function About({ onExploreEventsClick }: AboutProps) {
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="lg:col-span-5 relative"
           >
-            <div className="absolute -inset-4 bg-orange-100/60 rounded-none -z-10 transform -rotate-2 transition-transform duration-500 hover:rotate-0" />
-            <div className="relative border-4 border-gray-900 bg-white shadow-[8px_8px_0px_0px_rgba(240,108,37,0.2)] overflow-hidden group">
+            <div className="absolute -inset-4 bg-brand-orange-light rounded-none -z-10 transform -rotate-2 transition-transform duration-500 hover:rotate-0" />
+            <div className="relative border-4 border-neutral-900 bg-white shadow-brutal overflow-hidden group">
               <img
                 src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80"
                 alt="Students collaborating at Infobee"
@@ -98,11 +98,11 @@ export default function About({ onExploreEventsClick }: AboutProps) {
               </span>
             </div>
             
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight leading-[1.15] mb-6">
+            <h2 className="font-display text-3xl sm:text-5xl font-bold text-gray-900 tracking-tight leading-[1.15] mb-4 sm:mb-6">
               Empowering Minds, Shaping Technological Futures
             </h2>
             
-            <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-10 font-light">
+            <p className="text-gray-600 mb-10">
               Infobee is more than just a student club; it is a structural framework for growth.
               We operate on the principle that knowledge, like origami, can be folded and shaped
               into intricate masterpieces of technical functionalism. Through peer-to-peer mentoring,
@@ -111,11 +111,11 @@ export default function About({ onExploreEventsClick }: AboutProps) {
             </p>
 
             {/* Stats Boxes Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 sm:mb-10">
               {/* Stat 1: Members */}
               <motion.div 
                 whileHover={{ y: -4 }}
-                className="border-2 border-gray-100 p-5 sm:p-6 text-center bg-white hover:border-brand-orange hover:shadow-[4px_4px_0px_0px_rgba(240,108,37,1)] transition-all duration-300 cursor-default"
+                className="border-2 border-neutral-100 p-5 sm:p-6 text-center bg-white hover:border-brand-orange hover:shadow-brutal transition-all duration-300 cursor-default"
               >
                 <span className="block font-display text-3xl sm:text-4xl font-bold text-gray-900">
                   {membersCount}+
@@ -128,7 +128,7 @@ export default function About({ onExploreEventsClick }: AboutProps) {
               {/* Stat 2: Events */}
               <motion.div 
                 whileHover={{ y: -4 }}
-                className="border-2 border-gray-100 p-5 sm:p-6 text-center bg-white hover:border-brand-orange hover:shadow-[4px_4px_0px_0px_rgba(240,108,37,1)] transition-all duration-300 cursor-default"
+                className="border-2 border-neutral-100 p-5 sm:p-6 text-center bg-white hover:border-brand-orange hover:shadow-brutal transition-all duration-300 cursor-default"
               >
                 <span className="block font-display text-3xl sm:text-4xl font-bold text-gray-900">
                   {eventsCount}+
@@ -142,7 +142,7 @@ export default function About({ onExploreEventsClick }: AboutProps) {
               <motion.button 
                 whileHover={{ y: -4 }}
                 onClick={() => setShowTimeline(true)}
-                className="border-2 border-brand-orange/20 p-5 sm:p-6 text-center bg-orange-50/30 hover:bg-orange-50 hover:border-brand-orange hover:shadow-[4px_4px_0px_0px_rgba(240,108,37,1)] transition-all duration-300 cursor-pointer group flex flex-col justify-center w-full"
+                className="border-2 border-brand-orange/20 p-5 sm:p-6 text-center bg-brand-orange-light hover:bg-orange-50 hover:border-brand-orange hover:shadow-brutal transition-all duration-300 cursor-pointer group flex flex-col justify-center w-full"
                 title="Click to view full club timeline history"
               >
                 <span className="block font-display text-3xl sm:text-4xl font-bold text-brand-orange group-hover:scale-105 transition-transform">
@@ -157,10 +157,10 @@ export default function About({ onExploreEventsClick }: AboutProps) {
             <div>
               <button
                 onClick={onExploreEventsClick}
-                className="group inline-flex items-center space-x-3 text-sm font-bold tracking-widest text-gray-900 hover:text-brand-orange uppercase transition-colors cursor-pointer"
+                className="group inline-flex items-center space-x-3 text-xs sm:text-sm font-bold tracking-widest text-gray-900 hover:text-brand-orange uppercase transition-colors cursor-pointer"
               >
                 <span className="border-b-2 border-brand-orange pb-0.5">Browse upcoming activities</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </motion.div>
@@ -191,7 +191,7 @@ export default function About({ onExploreEventsClick }: AboutProps) {
                 className="w-screen max-w-md bg-white shadow-2xl flex flex-col h-full border-l-4 border-brand-orange"
               >
                 {/* Drawer Header */}
-                <div className="px-6 py-6 bg-brand-dark text-white flex items-center justify-between">
+                <div className="px-6 py-6 bg-neutral-900 text-white flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Milestone className="w-5 h-5 text-brand-orange" />
                     <span className="font-display text-lg font-bold tracking-tight">Infobee Club History</span>
@@ -205,8 +205,8 @@ export default function About({ onExploreEventsClick }: AboutProps) {
                 </div>
 
                 {/* Drawer Scrollable Timeline */}
-                <div className="flex-1 overflow-y-auto px-8 py-8 custom-scrollbar">
-                  <div className="relative border-l-2 border-gray-100 ml-3 pl-8 space-y-10">
+                <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-8 custom-scrollbar">
+                  <div className="relative border-l-2 border-neutral-100 ml-3 pl-6 sm:pl-8 space-y-10">
                     {timelineData.map((item, index) => (
                       <motion.div 
                         initial={{ opacity: 0, y: 10 }}
@@ -216,22 +216,22 @@ export default function About({ onExploreEventsClick }: AboutProps) {
                         className="relative group"
                       >
                         {/* Dot */}
-                        <div className="absolute -left-[41px] top-1 w-4 h-4 rounded-full border-2 border-brand-orange bg-white flex items-center justify-center group-hover:scale-125 transition-transform">
+                        <div className="absolute -left-[33px] sm:-left-[41px] top-1 w-4 h-4 rounded-full border-2 border-brand-orange bg-white flex items-center justify-center group-hover:scale-125 transition-transform">
                           <div className="w-1.5 h-1.5 rounded-full bg-brand-orange" />
                         </div>
                         
                         {/* Year */}
-                        <div className="inline-block bg-orange-50 border border-orange-100 text-brand-orange text-xs font-mono font-bold px-2.5 py-0.5 mb-2 shadow-sm">
+                        <div className="inline-block bg-brand-orange-light border border-brand-orange/20 text-brand-orange text-xs font-mono font-bold px-2.5 py-0.5 mb-2 shadow-sm">
                           {item.year}
                         </div>
 
                         {/* Title */}
-                        <h4 className="font-display font-bold text-gray-900 text-base mb-1.5">
+                        <h4 className="font-display font-bold text-gray-900 text-sm sm:text-base mb-1.5">
                           {item.title}
                         </h4>
 
                         {/* Desc */}
-                        <p className="text-gray-600 text-sm leading-relaxed">
+                        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
                           {item.desc}
                         </p>
                       </motion.div>
@@ -240,10 +240,10 @@ export default function About({ onExploreEventsClick }: AboutProps) {
                 </div>
 
                 {/* Drawer Footer */}
-                <div className="px-6 py-5 border-t border-gray-100 bg-gray-50 flex justify-end">
+                <div className="px-6 py-5 border-t border-neutral-100 bg-base-subtle flex justify-end">
                   <button
                     onClick={() => setShowTimeline(false)}
-                    className="px-6 py-2.5 bg-gray-900 hover:bg-brand-orange text-white text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-[4px_4px_0px_0px_rgba(240,108,37,0.3)]"
+                    className="px-6 py-2.5 bg-neutral-900 hover:bg-brand-orange text-white text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer shadow-brutal"
                   >
                     Close
                   </button>

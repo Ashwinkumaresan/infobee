@@ -3,15 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { API_URL } from '../../api';
 
-interface StudentSigninProps {
+interface StaffSigninProps {
   setIsLoggedIn?: (value: boolean) => void;
 }
 
-export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
+export default function StaffSignin({ setIsLoggedIn }: StaffSigninProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-  const [email, setEmail] = useState('');
+  const [staffId, setStaffId] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -40,8 +39,7 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          // username is the roll number, so we get it from email and uppercase it
-          username: email.split('@')[0].toUpperCase(),
+          username: staffId,
           password: password,
         }),
       });
@@ -81,7 +79,11 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
         }
       } else {
         const data = await response.json();
-        toast.error(data.detail || 'Invalid email or password');
+        let errorMessage = data.detail || 'Staff ID not found or Invalid Password';
+        if (errorMessage === 'College mail not found') {
+          errorMessage = 'Staff ID not found';
+        }
+        toast.error(errorMessage);
       }
     } catch (err) {
       toast.error('Unable to connect to the server. Please try again later.');
@@ -155,32 +157,27 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
           
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl text-[#1b1c1c] font-bold leading-tight mb-2">Student Portal</h2>
-              <p className="text-[#594238]">Sign in to your student account</p>
+              <h2 className="text-2xl text-[#1b1c1c] font-bold leading-tight mb-2">Staff Portal</h2>
+              <p className="text-[#594238]">Sign in to your staff account</p>
             </div>
             
             <form className="space-y-4" onSubmit={handleSignIn}>
-              {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 text-sm">
-                  {error}
-                </div>
-              )}
               
               <div className="flex flex-col gap-1.5">
                 <label 
-                  className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'email' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
-                  htmlFor="email"
+                  className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'staffId' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
+                  htmlFor="staffId"
                 >
-                  College Email
+                  Staff ID
                 </label>
                 <input 
                   className="w-full bg-[#ffffff] border border-[#8d7166] px-4 py-3 rounded-none text-[#1b1c1c] placeholder:text-[#dbd9d9] focus:outline-none focus:border-[#f46b24] transition-colors" 
-                  id="email" 
-                  placeholder="name@college.edu" 
+                  id="staffId" 
+                  placeholder="e.g. STAFF123" 
                   type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onFocus={() => setFocusedInput('email')}
+                  value={staffId}
+                  onChange={(e) => setStaffId(e.target.value)}
+                  onFocus={() => setFocusedInput('staffId')}
                   onBlur={() => setFocusedInput(null)}
                   required
                 />
@@ -215,8 +212,8 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
               </button>
             </form>
             
-            <div className="pt-4 text-center">
-              <Link to="/forgot-password" className="text-sm font-medium text-[#8d7166] hover:text-[#f46b24] transition-colors block mb-4">
+            <div className="mt-6 border-t border-[#e0c0b3] pt-6 text-center">
+              <Link to="/forgot-password" className="text-sm font-medium text-[#8d7166] hover:text-[#f46b24] transition-colors">
                 Forgot password?
               </Link>
             </div>

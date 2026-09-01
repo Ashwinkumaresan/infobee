@@ -52,7 +52,7 @@ export default function Contact({ onNewSubmission }: ContactProps) {
   };
 
   return (
-    <section id="contact" className="py-24 bg-white border-b border-gray-100">
+    <section id="contact" className="py-10 sm:py-16 bg-base border-b border-neutral-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           
@@ -90,7 +90,7 @@ export default function Contact({ onNewSubmission }: ContactProps) {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Name field */}
-              <div className="relative border-b border-gray-300 py-2 focus-within:border-brand-orange transition-colors">
+              <div className="relative border-b border-neutral-300 py-2 focus-within:border-brand-orange transition-colors">
                 <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-gray-500">
                   Name
                 </label>
@@ -100,12 +100,12 @@ export default function Contact({ onNewSubmission }: ContactProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Full Name"
-                  className="w-full bg-transparent border-none outline-none focus:ring-0 text-sm font-sans text-gray-900 placeholder-gray-400 mt-1"
+                  className="w-full bg-transparent border-none outline-none focus:ring-0 text-sm font-sans text-gray-900 placeholder-neutral-400 mt-1"
                 />
               </div>
 
               {/* Email field */}
-              <div className="relative border-b border-gray-300 py-2 focus-within:border-brand-orange transition-colors">
+              <div className="relative border-b border-neutral-300 py-2 focus-within:border-brand-orange transition-colors">
                 <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-gray-500">
                   Email Address
                 </label>
@@ -115,12 +115,12 @@ export default function Contact({ onNewSubmission }: ContactProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="hello@mcet.in"
-                  className="w-full bg-transparent border-none outline-none focus:ring-0 text-sm font-sans text-gray-900 placeholder-gray-400 mt-1"
+                  className="w-full bg-transparent border-none outline-none focus:ring-0 text-sm font-sans text-gray-900 placeholder-neutral-400 mt-1"
                 />
               </div>
 
               {/* Message field */}
-              <div className="relative border-b border-gray-300 py-2 focus-within:border-brand-orange transition-colors">
+              <div className="relative border-b border-neutral-300 py-2 focus-within:border-brand-orange transition-colors">
                 <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-gray-500">
                   Message
                 </label>
@@ -130,7 +130,7 @@ export default function Contact({ onNewSubmission }: ContactProps) {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="How can we help?"
-                  className="w-full bg-transparent border-none outline-none focus:ring-0 text-sm font-sans text-gray-900 placeholder-gray-400 mt-1 resize-none"
+                  className="w-full bg-transparent border-none outline-none focus:ring-0 text-sm font-sans text-gray-900 placeholder-neutral-400 mt-1 resize-none"
                 />
               </div>
 
@@ -139,7 +139,7 @@ export default function Contact({ onNewSubmission }: ContactProps) {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-widest px-6 py-4 rounded-sm uppercase shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
+                  className="w-full bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-widest px-6 py-4 rounded-sm uppercase shadow-brutal transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>

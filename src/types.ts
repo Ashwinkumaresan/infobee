@@ -39,21 +39,29 @@ export interface GalleryImage {
   date: string;
 }
 
+export interface ResearchAuthor {
+  name: string;
+  email?: string;
+  description: string;
+  type: 'Student' | 'Faculty';
+  profile_id?: number | string;
+}
+
 export interface ResearchPaper {
   id: string;
   title: string;
-  authors: string[];
-  authorType: 'Faculty' | 'Student';
+  authors: ResearchAuthor[];
+  author_type: 'Faculty' | 'Student';
   journal: string;
   publisher?: string;
   year: number;
   domain: string;
   citations: number;
   featured?: boolean;
-  isDarkFeatured?: boolean;
+  is_dark_featured?: boolean;
   abstract: string;
   doi?: string;
-  pdfUrl?: string;
+  pdf_url?: string;
   keywords: string[];
 }
 

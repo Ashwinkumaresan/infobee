@@ -31,11 +31,11 @@ export default function Events({
   // Category specific colors matching the image's high-art feel
   const getCategoryColorClass = (category: string) => {
     const cat = category.toLowerCase();
-    if (cat === 'hackathon') return 'text-[#f06c25]';
-    if (cat === 'workshop') return 'text-[#2D5A7B]';
-    if (cat.includes('research')) return 'text-[#f06c25]';
-    if (cat === 'seminar') return 'text-[#f06c25]';
-    return 'text-[#f06c25]';
+    if (cat === 'hackathon') return 'text-brand-orange';
+    if (cat === 'workshop') return 'text-brand-orange';
+    if (cat.includes('research')) return 'text-brand-orange';
+    if (cat === 'seminar') return 'text-brand-orange';
+    return 'text-brand-orange';
   };
 
   // Strip ", 2026" or ", 2024" for upcoming events to match image typography
@@ -60,17 +60,17 @@ export default function Events({
   const showCalendarBox = (activeTab === 'all' || activeTab === 'upcoming');
 
   return (
-    <section id="events" className="py-24 bg-[#FAF9F6] border-b border-gray-200">
+    <section id="events" className="py-10 sm:py-16 bg-base-muted border-b border-neutral-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Block */}
-        <div className="mb-16">
+        <div className="mb-10 sm:mb-16">
           <div className="relative">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight leading-none">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-neutral-900 tracking-tight leading-none">
               Explore Our <span className="font-handwritten font-normal text-brand-orange">Portal</span>
             </h2>
             {/* Elegant Thick Orange Line exactly matching the image */}
-            <div className="w-24 h-[5px] bg-[#f06c25] mt-4" />
+            <div className="w-16 sm:w-24 h-1 sm:h-[5px] bg-brand-orange mt-3 sm:mt-4" />
           </div>
         </div>
 
@@ -127,14 +127,14 @@ export default function Events({
                 return (
                   <div
                     key={feature.id}
-                    className={`relative bg-white border border-[#E2E1DF] rounded-none overflow-hidden flex flex-col ${isBig ? 'md:col-span-2' : 'md:col-span-1'} p-8 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.02)] hover:shadow-md hover:border-[#f06c25] transition-all duration-300 group`}
+                    className={`relative bg-white border border-neutral-200 rounded-none overflow-hidden flex flex-col ${isBig ? 'md:col-span-2' : 'md:col-span-1'} p-6 sm:p-8 shadow-card hover:shadow-card-hover hover:border-brand-orange/50 transition-all duration-300 group`}
                   >
                     {/* Coming Soon Overlay */}
                     {feature.id !== 'research' && (
                       <div className="absolute inset-0 bg-white/50 backdrop-blur-[4px] z-50 flex items-center justify-center transition-all duration-300">
-                        <div className="bg-white px-6 py-2.5 border border-gray-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center gap-2.5">
-                          <Clock className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-600 font-medium text-sm tracking-wide">
+                        <div className="bg-white px-4 sm:px-6 py-2 sm:py-2.5 border border-neutral-200 shadow-card flex items-center gap-2 sm:gap-2.5">
+                          <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-neutral-400" />
+                          <span className="text-neutral-600 font-medium text-xs sm:text-sm tracking-wide">
                             Coming Soon
                           </span>
                         </div>
@@ -143,23 +143,23 @@ export default function Events({
 
                     {/* New Decorative Patterns */}
                     {/* Full card fine grid pattern fading to bottom */}
-                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#f06c2522_1px,transparent_1px),linear-gradient(to_bottom,#f06c2522_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:linear-gradient(to_bottom,white_20%,transparent)]"></div>
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#F06C2522_1px,transparent_1px),linear-gradient(to_bottom,#F06C2522_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:linear-gradient(to_bottom,white_20%,transparent)]"></div>
                     
                     {/* Top right geometric accent (dense grid/crosses) */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[linear-gradient(to_right,#f06c2544_1px,transparent_1px),linear-gradient(to_bottom,#f06c2544_1px,transparent_1px)] bg-[size:8px_8px] [mask-image:radial-gradient(circle_at_top_right,white,transparent)]"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[linear-gradient(to_right,#F06C2544_1px,transparent_1px),linear-gradient(to_bottom,#F06C2544_1px,transparent_1px)] bg-[size:8px_8px] [mask-image:radial-gradient(circle_at_top_right,white,transparent)]"></div>
                     
                     {/* Bottom-right ambient glow */}
-                    <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-[#f06c25] rounded-full blur-[100px] opacity-25 pointer-events-none"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-brand-orange rounded-full blur-[100px] opacity-25 pointer-events-none"></div>
 
                     <div className="relative z-10 flex flex-col justify-between h-full">
                       <div>
-                        <div className={`font-mono text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-4 text-[#f06c25]`}>
+                        <div className={`font-mono text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-3 sm:mb-4 text-brand-orange`}>
                           {feature.category.toUpperCase()}
                         </div>
-                        <h3 className={`font-display ${isBig ? 'text-3xl lg:text-4xl' : 'text-xl sm:text-2xl'} font-bold text-gray-900 tracking-tight mb-5`}>
+                        <h3 className={`font-display ${isBig ? 'text-2xl lg:text-4xl' : 'text-xl sm:text-2xl'} font-bold text-neutral-900 tracking-tight mb-3 sm:mb-5`}>
                           {feature.title}
                         </h3>
-                        <p className={`text-gray-600 text-sm leading-relaxed mb-8 ${!isBig && 'line-clamp-4'}`}>
+                        <p className={`text-neutral-500 text-xs sm:text-sm leading-relaxed mb-6 sm:mb-8 ${!isBig && 'line-clamp-4'}`}>
                           {feature.description}
                         </p>
                       </div>
@@ -168,10 +168,10 @@ export default function Events({
                         <Link
                           to={feature.link}
                           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                          className="inline-flex items-center space-x-1.5 text-xs font-bold tracking-widest uppercase text-[#f06c25] hover:text-[#d65718] transition-colors cursor-pointer"
+                          className="inline-flex items-center space-x-1.5 text-[10px] sm:text-xs font-bold tracking-widest uppercase text-brand-orange hover:text-brand-orange-hover transition-colors cursor-pointer"
                         >
                           <span>{feature.actionText}</span>
-                          <span className="text-base font-normal transform transition-transform group-hover:translate-x-1">→</span>
+                          <span className="text-sm sm:text-base font-normal transform transition-transform group-hover:translate-x-1">→</span>
                         </Link>
                       </div>
                     </div>

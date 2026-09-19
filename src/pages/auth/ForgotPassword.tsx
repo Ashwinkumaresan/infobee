@@ -163,10 +163,8 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center font-sans p-4 bg-white overflow-x-hidden">
+    <div className="w-full min-h-screen bg-surface flex flex-col items-center justify-center pt-24 pb-12 px-4 sm:px-6 relative overflow-hidden">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
-        
         .tessellation-bg {
             position: fixed;
             inset: 0;
@@ -182,69 +180,24 @@ export default function ForgotPassword() {
             opacity: 0.3;
             z-index: 0;
         }
-
-        .faceted-card {
-            background: #fbf9f8;
-            border: 1px solid #8d7166;
-            clip-path: polygon(0% 0%, 92% 0%, 100% 8%, 100% 100%, 0% 100%);
-            position: relative;
-        }
-
-        .input-brutalist {
-            border: 1px solid #8d7166;
-            background: white;
-            transition: all 0.2s ease;
-        }
-
-        .input-brutalist:focus {
-            outline: none;
-            border-color: #f46b24;
-            box-shadow: 4px 4px 0px #8d7166;
-            transform: translate(-2px, -2px);
-        }
-
-        .btn-brutalist {
-            border: 1px solid #8d7166;
-            background: #f46b24;
-            color: white;
-            box-shadow: 4px 4px 0px #8d7166;
-            transition: all 0.2s ease;
-        }
-
-        .btn-brutalist:hover:not(:disabled) {
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0px #8d7166;
-        }
-
-        .btn-brutalist:active:not(:disabled) {
-            transform: translate(4px, 4px);
-            box-shadow: 0px 0px 0px #8d7166;
-        }
-        
-        .btn-brutalist:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: translate(0, 0);
-            box-shadow: 4px 4px 0px #8d7166;
-        }
       `}</style>
+      
+      <div className="tessellation-bg"></div>
 
-      <div className="tessellation-bg" />
-
-      <div className="relative z-10 w-full max-w-md">
-        <div className="faceted-card p-8">
+      <div className="w-full max-w-[440px] flex flex-col items-center relative z-10">
+        <div className="w-full bg-surface-container-lowest shadow-xl rounded-2xl p-8 md:p-10 transition-stage">
           <div className="flex justify-center mb-8">
-            <div className="w-16 h-16 bg-[#f46b24] border-2 border-[#8d7166] flex items-center justify-center relative shadow-[4px_4px_0px_#8d7166]">
+            <div className="w-16 h-16 bg-primary-container border-2 border-outline-variant rounded-2xl flex items-center justify-center relative shadow-sm">
               <div className="absolute w-2 h-2 bg-white rounded-full top-2 right-2" />
               <div className="absolute w-2 h-2 bg-white rounded-full bottom-2 left-2" />
-              <span className="font-['JetBrains_Mono'] text-white font-bold text-2xl tracking-tighter">IF</span>
+              <span className="font-mono text-on-primary font-bold text-2xl tracking-tighter">IF</span>
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#f46b24] text-center uppercase tracking-tight mb-2">
+          <h2 className="font-display text-headline-md font-bold text-on-surface text-center leading-tight mb-2">
             {step === 1 ? 'Forgot Password' : step === 2 ? 'Enter OTP' : 'New Password'}
           </h2>
-          <p className="text-[#8d7166] text-center mb-8 font-medium">
+          <p className="font-body-md text-secondary text-center mb-8">
             {step === 1 && "Enter your official email to reset your password"}
             {step === 2 && "We've sent a 4-digit OTP to your email"}
             {step === 3 && "Secure your account with a new password"}
@@ -253,10 +206,10 @@ export default function ForgotPassword() {
           {step === 1 && (
             <form onSubmit={handleSendOtp} className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-[#8d7166] uppercase tracking-wide mb-2">Official Email</label>
+                <label className="font-label-sm text-label-sm uppercase tracking-wider font-bold text-secondary mb-2 block">Official Email</label>
                 <div className="relative">
                   <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10 transition-transform ${focusedInput === 'email' ? '' : ''}`}>
-                    <Mail className={`h-5 w-5 ${focusedInput === 'email' ? 'text-[#f46b24]' : 'text-[#8d7166]'}`} />
+                    <Mail className={`h-5 w-5 ${focusedInput === 'email' ? 'text-primary-container' : 'text-secondary'}`} />
                   </div>
                   <input
                     type="email"
@@ -265,7 +218,7 @@ export default function ForgotPassword() {
                     onChange={(e) => setEmail(e.target.value)}
                     onFocus={() => setFocusedInput('email')}
                     onBlur={() => setFocusedInput(null)}
-                    className="input-brutalist block w-full pl-10 pr-3 py-3 text-[#333] placeholder-gray-400 focus:ring-0 sm:text-sm"
+                    className="w-full bg-surface-container-low border border-transparent pl-10 pr-4 py-3 rounded-lg text-on-surface font-body-md placeholder:text-outline-variant focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest transition-colors"
                     placeholder="e.g. yourname.it21@mcet.in"
                   />
                 </div>
@@ -274,7 +227,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-brutalist w-full flex justify-center py-3 px-4 font-bold uppercase tracking-wider text-sm mt-8"
+                className="w-full bg-primary-container hover:bg-primary text-on-primary py-4 rounded-lg font-label-md text-label-md font-bold uppercase tracking-wider shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 mt-8 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? 'Sending OTP...' : 'Send OTP'}
               </button>
@@ -284,7 +237,7 @@ export default function ForgotPassword() {
           {step === 2 && (
             <form onSubmit={handleVerifyOtp} className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-[#8d7166] uppercase tracking-wide mb-3 text-center">Enter 4-Digit OTP</label>
+                <label className="font-label-sm text-label-sm uppercase tracking-wider font-bold text-secondary mb-3 block text-center">Enter 4-Digit OTP</label>
                 <div className="flex justify-center gap-4">
                   {otp.map((digit, index) => (
                     <input
@@ -300,7 +253,7 @@ export default function ForgotPassword() {
                       onPaste={handlePaste}
                       onFocus={() => setFocusedInput(`otp-${index}`)}
                       onBlur={() => setFocusedInput(null)}
-                      className="input-brutalist w-14 h-14 text-center text-2xl font-['JetBrains_Mono'] font-bold text-[#333] focus:ring-0"
+                      className="w-14 h-14 bg-surface-container-low border border-transparent rounded-lg text-center text-2xl font-mono font-bold text-on-surface focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest transition-colors"
                     />
                   ))}
                 </div>
@@ -313,14 +266,14 @@ export default function ForgotPassword() {
                     setStep(1);
                     localStorage.setItem('forgot_pwd_step', '1');
                   }}
-                  className="w-1/3 flex justify-center items-center py-3 px-4 font-bold uppercase tracking-wider text-sm border border-[#8d7166] text-[#8d7166] hover:bg-[#fbf9f8] transition-colors"
+                  className="w-1/3 flex justify-center items-center py-3.5 rounded-lg font-label-md text-label-md font-bold uppercase tracking-wider border-2 border-outline-variant text-on-surface hover:bg-surface-container-low transition-all"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" /> Back
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-brutalist flex-1 flex justify-center items-center py-3 px-4 font-bold uppercase tracking-wider text-sm"
+                  className="flex-1 bg-primary-container hover:bg-primary text-on-primary py-3.5 rounded-lg font-label-md text-label-md font-bold uppercase tracking-wider shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center"
                 >
                   {loading ? 'Verifying...' : 'Verify'} <ArrowRight className="h-4 w-4 ml-2" />
                 </button>
@@ -330,7 +283,7 @@ export default function ForgotPassword() {
                   type="button"
                   onClick={handleSendOtp}
                   disabled={loading}
-                  className="text-sm font-bold text-[#f46b24] hover:underline uppercase tracking-wider"
+                  className="font-label-sm text-label-sm font-bold text-primary-container hover:underline uppercase tracking-wider"
                 >
                   Resend OTP
                 </button>
@@ -341,10 +294,10 @@ export default function ForgotPassword() {
           {step === 3 && (
             <form onSubmit={handleResetPassword} className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-[#8d7166] uppercase tracking-wide mb-2">New Password</label>
+                <label className="font-label-sm text-label-sm uppercase tracking-wider font-bold text-secondary mb-2 block">New Password</label>
                 <div className="relative">
                   <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10 transition-transform ${focusedInput === 'password' ? '' : ''}`}>
-                    <Lock className={`h-5 w-5 ${focusedInput === 'password' ? 'text-[#f46b24]' : 'text-[#8d7166]'}`} />
+                    <Lock className={`h-5 w-5 ${focusedInput === 'password' ? 'text-primary-container' : 'text-secondary'}`} />
                   </div>
                   <input
                     type="password"
@@ -353,17 +306,17 @@ export default function ForgotPassword() {
                     onChange={(e) => setPassword(e.target.value)}
                     onFocus={() => setFocusedInput('password')}
                     onBlur={() => setFocusedInput(null)}
-                    className="input-brutalist block w-full pl-10 pr-3 py-3 text-[#333] placeholder-gray-400 focus:ring-0 sm:text-sm"
+                    className="w-full bg-surface-container-low border border-transparent pl-10 pr-4 py-3 rounded-lg text-on-surface font-body-md placeholder:text-outline-variant focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest transition-colors"
                     placeholder="••••••••"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#8d7166] uppercase tracking-wide mb-2">Confirm Password</label>
+                <label className="font-label-sm text-label-sm uppercase tracking-wider font-bold text-secondary mb-2 block">Confirm Password</label>
                 <div className="relative">
                   <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10 transition-transform ${focusedInput === 'confirmPassword' ? '' : ''}`}>
-                    <Lock className={`h-5 w-5 ${focusedInput === 'confirmPassword' ? 'text-[#f46b24]' : 'text-[#8d7166]'}`} />
+                    <Lock className={`h-5 w-5 ${focusedInput === 'confirmPassword' ? 'text-primary-container' : 'text-secondary'}`} />
                   </div>
                   <input
                     type="password"
@@ -372,7 +325,7 @@ export default function ForgotPassword() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     onFocus={() => setFocusedInput('confirmPassword')}
                     onBlur={() => setFocusedInput(null)}
-                    className="input-brutalist block w-full pl-10 pr-3 py-3 text-[#333] placeholder-gray-400 focus:ring-0 sm:text-sm"
+                    className="w-full bg-surface-container-low border border-transparent pl-10 pr-4 py-3 rounded-lg text-on-surface font-body-md placeholder:text-outline-variant focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest transition-colors"
                     placeholder="••••••••"
                   />
                 </div>
@@ -381,7 +334,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-brutalist w-full flex justify-center py-3 px-4 font-bold uppercase tracking-wider text-sm mt-8"
+                className="w-full bg-primary-container hover:bg-primary text-on-primary py-4 rounded-lg font-label-md text-label-md font-bold uppercase tracking-wider shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 mt-8 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? 'Resetting...' : 'Reset Password'}
               </button>
@@ -389,8 +342,8 @@ export default function ForgotPassword() {
           )}
           
           {step === 1 && (
-            <div className="mt-6 border-t border-[#e0c0b3] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <Link to="/student/signin" className="text-sm font-medium text-[#8d7166] hover:text-[#f46b24] transition-colors flex items-center group">
+            <div className="mt-6 border-t border-outline-variant pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <Link to="/student/signin" className="font-label-sm text-label-sm font-medium text-secondary hover:text-primary-container transition-colors flex items-center group">
                 <ArrowLeft className="h-4 w-4 mr-1 transform group-hover:-translate-x-1 transition-transform" /> Back to Sign in
               </Link>
             </div>

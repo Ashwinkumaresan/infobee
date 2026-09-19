@@ -134,11 +134,11 @@ export default function StaffSignin({ setIsLoggedIn }: StaffSigninProps) {
             pointer-events: none;
         }
 
-        .block-shadow {
+        .shadow-sm rounded-xl {
             box-shadow: 4px 4px 0px 0px #1b1c1c;
         }
 
-        .block-shadow:active {
+        .shadow-sm rounded-xl:active {
             box-shadow: 0px 0px 0px 0px #1b1c1c;
             transform: translate(2px, 2px);
         }
@@ -153,25 +153,25 @@ export default function StaffSignin({ setIsLoggedIn }: StaffSigninProps) {
       <main className="w-full max-w-[440px] flex flex-col items-center relative z-10">
 
         {/* Main Card */}
-        <div className="faceted-card w-full p-8 md:p-10 transition-stage" id="signin-card">
+        <div className="w-full bg-surface-container-lowest shadow-xl rounded-2xl p-8 md:p-10 transition-stage" id="signin-card">
           
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl text-[#1b1c1c] font-bold leading-tight mb-2">Staff Portal</h2>
-              <p className="text-[#594238]">Sign in to your staff account</p>
+              <h2 className="font-display text-headline-md font-bold text-on-surface leading-tight mb-2">Staff Portal</h2>
+              <p className="font-body-md text-secondary">Sign in to your staff account</p>
             </div>
             
             <form className="space-y-4" onSubmit={handleSignIn}>
               
               <div className="flex flex-col gap-1.5">
                 <label 
-                  className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'staffId' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
+                  className={`font-label-sm text-label-sm uppercase tracking-wider font-bold transition-colors ${focusedInput === 'staffId' ? 'text-primary-container' : 'text-secondary'}`} 
                   htmlFor="staffId"
                 >
                   Staff ID
                 </label>
                 <input 
-                  className="w-full bg-[#ffffff] border border-[#8d7166] px-4 py-3 rounded-none text-[#1b1c1c] placeholder:text-[#dbd9d9] focus:outline-none focus:border-[#f46b24] transition-colors" 
+                  className="w-full bg-surface-container-low border border-transparent px-4 py-3 rounded-lg text-on-surface font-body-md placeholder:text-outline-variant focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest transition-colors" 
                   id="staffId" 
                   placeholder="e.g. STAFF123" 
                   type="text"
@@ -185,13 +185,13 @@ export default function StaffSignin({ setIsLoggedIn }: StaffSigninProps) {
               
               <div className="flex flex-col gap-1.5">
                 <label 
-                  className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'password' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
+                  className={`font-label-sm text-label-sm uppercase tracking-wider font-bold transition-colors ${focusedInput === 'password' ? 'text-primary-container' : 'text-secondary'}`} 
                   htmlFor="password"
                 >
                   Password
                 </label>
                 <input 
-                  className="w-full bg-[#ffffff] border border-[#8d7166] px-4 py-3 rounded-none text-[#1b1c1c] focus:outline-none focus:border-[#f46b24] transition-colors" 
+                  className="w-full bg-surface-container-low border border-transparent px-4 py-3 rounded-lg text-on-surface font-body-md focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest transition-colors" 
                   id="password" 
                   placeholder="••••••••" 
                   type="password"
@@ -206,14 +206,14 @@ export default function StaffSignin({ setIsLoggedIn }: StaffSigninProps) {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-widest block-shadow transition-all hover:bg-[#a33e00] mt-4 disabled:opacity-70 disabled:cursor-not-allowed" 
+                className="w-full bg-primary-container hover:bg-primary text-on-primary py-4 rounded-lg font-label-md text-label-md font-bold uppercase tracking-wider shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 mt-4 disabled:opacity-70 disabled:cursor-not-allowed" 
               >
                 {loading ? 'Signing In...' : 'Sign In'}
               </button>
             </form>
             
-            <div className="mt-6 border-t border-[#e0c0b3] pt-6 text-center">
-              <Link to="/forgot-password" className="text-sm font-medium text-[#8d7166] hover:text-[#f46b24] transition-colors">
+            <div className="mt-6 border-t border-outline-variant pt-6 text-center">
+              <Link to="/forgot-password" className="font-label-sm text-label-sm font-medium text-secondary hover:text-primary-container transition-colors">
                 Forgot password?
               </Link>
             </div>

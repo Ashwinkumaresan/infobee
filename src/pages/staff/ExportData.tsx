@@ -173,30 +173,30 @@ export default function ExportData() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f3f3] text-[#1b1c1c] pb-32 lg:pb-20">
+    <div className="min-h-screen bg-surface-container-lowest text-on-surface pb-32 lg:pb-20">
       <style>{`
-        .block-shadow {
+        .shadow-sm rounded-xl {
             box-shadow: 4px 4px 0px 0px rgba(27, 28, 28, 0.1);
         }
       `}</style>
       
-      <header className="bg-white border-b-4 border-[#1b1c1c] pt-6 md:pt-10 pb-6 md:pb-8 relative overflow-hidden">
+      <header className="bg-white border-b-4 border-outline pt-6 md:pt-10 pb-6 md:pb-8 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#1b1c1c_1px,transparent_1px)] [background-size:20px_20px]"></div>
         
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <button 
             onClick={() => navigate('/staff/profile')}
-            className="flex items-center gap-2 text-[#594238] hover:text-[#f46b24] mb-4 md:mb-6 font-bold text-xs md:text-sm tracking-wider uppercase transition-colors"
+            className="flex items-center gap-2 text-secondary hover:text-primary-container mb-4 md:mb-6 font-bold text-xs md:text-sm tracking-wider uppercase transition-colors"
           >
             <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
             Back to Staff Dashboard
           </button>
           
-          <h1 className="font-display text-3xl md:text-5xl font-black uppercase tracking-tight text-[#1b1c1c] flex items-center gap-3 md:gap-4">
-            <Download className="w-8 h-8 md:w-10 md:h-10 text-[#f46b24]" />
+          <h1 className="font-display text-3xl md:text-5xl font-black uppercase tracking-tight text-on-surface flex items-center gap-3 md:gap-4">
+            <Download className="w-8 h-8 md:w-10 md:h-10 text-primary-container" />
             Export Data
           </h1>
-          <p className="mt-3 md:mt-4 text-[#8d7166] text-sm md:text-lg max-w-2xl font-medium">
+          <p className="mt-3 md:mt-4 text-outline text-sm md:text-lg max-w-2xl font-medium">
             Select students and data columns to generate a custom CSV spreadsheet report.
           </p>
         </div>
@@ -207,31 +207,31 @@ export default function ExportData() {
           
           {/* Left Column: Target Selection */}
           <div className="lg:col-span-1 space-y-6 md:space-y-8">
-            <div className="bg-white border border-[#e0c0b3] p-4 sm:p-6 lg:p-8 block-shadow">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 border-b border-[#e0c0b3] pb-2">Target Audience</h2>
+            <div className="bg-white border border-outline-variant p-4 sm:p-6 lg:p-8 shadow-sm rounded-xl">
+              <h2 className="font-display text-headline-sm font-bold text-on-surface mb-6 border-b border-outline-variant pb-2">Target Audience</h2>
               
               <div className="space-y-4">
-                <label className={`flex items-start gap-3 p-4 border transition-colors cursor-pointer ${target === 'all' ? 'border-[#f46b24] bg-[#fbf9f8]' : 'border-[#e0c0b3] hover:border-[#1b1c1c]'}`}>
+                <label className={`flex items-start gap-3 p-4 border transition-colors cursor-pointer ${target === 'all' ? 'border-primary-container bg-surface' : 'border-outline-variant hover:border-outline'}`}>
                   <input type="radio" name="target" value="all" checked={target === 'all'} onChange={() => setTarget('all')} className="mt-1" />
                   <div>
-                    <span className="block font-bold text-[#1b1c1c] uppercase tracking-wider text-sm mb-1">All Students</span>
-                    <span className="block text-xs text-[#8d7166]">Export data for all students in the database.</span>
+                    <span className="block font-bold text-on-surface uppercase tracking-wider text-sm mb-1">All Students</span>
+                    <span className="block text-xs text-outline">Export data for all students in the database.</span>
                   </div>
                 </label>
 
-                <label className={`flex items-start gap-3 p-4 border transition-colors cursor-pointer ${target === 'mentees' ? 'border-[#f46b24] bg-[#fbf9f8]' : 'border-[#e0c0b3] hover:border-[#1b1c1c]'}`}>
+                <label className={`flex items-start gap-3 p-4 border transition-colors cursor-pointer ${target === 'mentees' ? 'border-primary-container bg-surface' : 'border-outline-variant hover:border-outline'}`}>
                   <input type="radio" name="target" value="mentees" checked={target === 'mentees'} onChange={() => setTarget('mentees')} className="mt-1" />
                   <div>
-                    <span className="block font-bold text-[#1b1c1c] uppercase tracking-wider text-sm mb-1">My Mentees Only</span>
-                    <span className="block text-xs text-[#8d7166]">Auto-select all students assigned to you as a mentor.</span>
+                    <span className="block font-bold text-on-surface uppercase tracking-wider text-sm mb-1">My Mentees Only</span>
+                    <span className="block text-xs text-outline">Auto-select all students assigned to you as a mentor.</span>
                   </div>
                 </label>
 
-                <label className={`flex items-start gap-3 p-4 border transition-colors cursor-pointer ${target === 'specific' ? 'border-[#f46b24] bg-[#fbf9f8]' : 'border-[#e0c0b3] hover:border-[#1b1c1c]'}`}>
+                <label className={`flex items-start gap-3 p-4 border transition-colors cursor-pointer ${target === 'specific' ? 'border-primary-container bg-surface' : 'border-outline-variant hover:border-outline'}`}>
                   <input type="radio" name="target" value="specific" checked={target === 'specific'} onChange={() => setTarget('specific')} className="mt-1" />
                   <div>
-                    <span className="block font-bold text-[#1b1c1c] uppercase tracking-wider text-sm mb-1">Specific Students</span>
-                    <span className="block text-xs text-[#8d7166]">Search and manually select individual students.</span>
+                    <span className="block font-bold text-on-surface uppercase tracking-wider text-sm mb-1">Specific Students</span>
+                    <span className="block text-xs text-outline">Search and manually select individual students.</span>
                   </div>
                 </label>
                 
@@ -239,7 +239,7 @@ export default function ExportData() {
                   <div className="pl-8">
                     <button
                       onClick={() => setShowStudentModal(true)}
-                      className="bg-[#1b1c1c] text-white px-4 py-2 font-bold uppercase tracking-widest text-xs hover:bg-[#f46b24] transition-colors"
+                      className="bg-on-surface text-white px-4 py-2 font-bold uppercase tracking-widest text-xs hover:bg-primary-container transition-colors"
                     >
                       Select Students ({selectedStudents.length})
                     </button>
@@ -247,12 +247,12 @@ export default function ExportData() {
                 )}
               </div>
 
-              <div className={`border transition-colors ${target === 'range' ? 'border-[#f46b24] bg-[#fbf9f8]' : 'border-[#e0c0b3] hover:border-[#1b1c1c]'}`}>
+              <div className={`border transition-colors ${target === 'range' ? 'border-primary-container bg-surface' : 'border-outline-variant hover:border-outline'}`}>
                 <label className="flex items-start gap-3 p-4 cursor-pointer">
                   <input type="radio" name="target" value="range" checked={target === 'range'} onChange={() => setTarget('range')} className="mt-1" />
                   <div>
-                    <span className="block font-bold text-[#1b1c1c] uppercase tracking-wider text-sm mb-1">Roll Number Range</span>
-                    <span className="block text-xs text-[#8d7166]">Export students between a start and end roll number.</span>
+                    <span className="block font-bold text-on-surface uppercase tracking-wider text-sm mb-1">Roll Number Range</span>
+                    <span className="block text-xs text-outline">Export students between a start and end roll number.</span>
                   </div>
                 </label>
                 
@@ -265,7 +265,7 @@ export default function ExportData() {
                         setEndRoll('');
                         setShowRangeModal(true);
                       }}
-                      className="bg-[#1b1c1c] text-white px-4 py-2 font-bold uppercase tracking-widest text-xs hover:bg-[#f46b24] transition-colors"
+                      className="bg-on-surface text-white px-4 py-2 font-bold uppercase tracking-widest text-xs hover:bg-primary-container transition-colors"
                     >
                       Select Range {startRoll && endRoll ? `(${startRoll} - ${endRoll} : ${rangeCount} students)` : ''}
                     </button>
@@ -278,7 +278,7 @@ export default function ExportData() {
             <button 
               onClick={handleExport}
               disabled={exporting}
-              className="hidden lg:flex w-full bg-[#f46b24] text-white py-4 font-sans font-bold uppercase tracking-widest block-shadow hover:bg-[#d55a1e] transition-colors items-center justify-center gap-2 disabled:opacity-70"
+              className="hidden lg:flex w-full bg-primary-container text-white py-4 font-sans font-bold uppercase tracking-wider shadow-sm hover:bg-[#d55a1e] transition-colors items-center justify-center gap-2 disabled:opacity-70"
             >
               {exporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
               {exporting ? "Generating..." : "Generate CSV Report"}
@@ -287,32 +287,32 @@ export default function ExportData() {
 
           {/* Right Column: Column Selection */}
           <div className="lg:col-span-2">
-            <div className="bg-white border border-[#e0c0b3] p-4 sm:p-6 lg:p-8 block-shadow">
-              <div className="flex items-center justify-between mb-6 border-b border-[#e0c0b3] pb-2">
-                <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c]">Data Columns</h2>
+            <div className="bg-white border border-outline-variant p-4 sm:p-6 lg:p-8 shadow-sm rounded-xl">
+              <div className="flex items-center justify-between mb-6 border-b border-outline-variant pb-2">
+                <h2 className="font-display text-headline-sm font-bold text-on-surface">Data Columns</h2>
                 <div className="flex items-center gap-4">
                   <button 
                     onClick={toggleAllColumns}
-                    className="text-[10px] uppercase font-bold tracking-wider text-[#f46b24] hover:underline"
+                    className="text-[10px] uppercase font-bold tracking-wider text-primary-container hover:underline"
                   >
                     {columns.length > 0 && columns.every(c => selectedColumns.includes(c.id)) ? "Deselect All" : "Select All"}
                   </button>
-                  <span className="font-['JetBrains_Mono',_monospace] text-xs text-[#8d7166] font-bold">
+                  <span className="font-mono text-xs text-outline font-bold">
                     {selectedColumns.length} / {columns.length} Selected
                   </span>
                 </div>
               </div>
               
               {columns.length === 0 ? (
-                <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-[#f46b24]" /></div>
+                <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-primary-container" /></div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
                   {columns.map((col: any) => (
                     <label key={col.id} className="flex items-center gap-3 cursor-pointer group" onClick={(e) => { e.preventDefault(); toggleColumn(col.id); }}>
-                      <div className={`w-5 h-5 shrink-0 border flex items-center justify-center transition-colors ${selectedColumns.includes(col.id) ? 'bg-[#f46b24] border-[#f46b24]' : 'border-[#1b1c1c] group-hover:border-[#f46b24]'}`}>
+                      <div className={`w-5 h-5 shrink-0 border flex items-center justify-center transition-colors ${selectedColumns.includes(col.id) ? 'bg-primary-container border-primary-container' : 'border-outline group-hover:border-primary-container'}`}>
                         {selectedColumns.includes(col.id) && <Check className="w-3 h-3 text-white" />}
                       </div>
-                      <span className="text-sm font-medium text-[#594238] group-hover:text-[#1b1c1c] truncate" title={col.label}>{col.label}</span>
+                      <span className="text-sm font-medium text-secondary group-hover:text-on-surface truncate" title={col.label}>{col.label}</span>
                     </label>
                   ))}
                 </div>
@@ -324,11 +324,11 @@ export default function ExportData() {
       </main>
 
       {/* Mobile Fixed Export Button */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t-2 border-[#1b1c1c] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-40">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t-2 border-outline shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-40">
         <button 
           onClick={handleExport}
           disabled={exporting}
-          className="w-full bg-[#f46b24] text-white py-4 font-sans font-bold uppercase tracking-widest block-shadow hover:bg-[#d55a1e] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+          className="w-full bg-primary-container text-white py-4 font-sans font-bold uppercase tracking-wider shadow-sm hover:bg-[#d55a1e] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
         >
           {exporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
           {exporting ? "Generating..." : "Generate CSV Report"}
@@ -337,50 +337,50 @@ export default function ExportData() {
 
       {/* Student Selection Modal */}
       {showStudentModal && (
-        <div className="fixed inset-0 bg-[#1b1c1c]/50 backdrop-blur-sm z-50 flex items-center justify-center p-0 sm:p-4">
-          <div className="bg-white sm:border-2 border-[#1b1c1c] w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-2xl flex flex-col sm:block-shadow">
-            <div className="flex justify-between items-center p-6 border-b border-[#e0c0b3] bg-[#fbf9f8]">
-              <h2 className="font-display font-bold text-2xl uppercase tracking-wider text-[#1b1c1c]">Select Students</h2>
+        <div className="fixed inset-0 bg-on-surface/50 backdrop-blur-sm z-50 flex items-center justify-center p-0 sm:p-4">
+          <div className="bg-white sm:border-2 border-outline w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-2xl flex flex-col sm:shadow-sm rounded-xl">
+            <div className="flex justify-between items-center p-6 border-b border-outline-variant bg-surface">
+              <h2 className="font-display font-bold text-2xl uppercase tracking-wider text-on-surface">Select Students</h2>
               <button 
                 onClick={() => setShowStudentModal(false)}
-                className="text-[#8d7166] hover:text-[#f46b24] transition-colors"
+                className="text-outline hover:text-primary-container transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
             
-            <div className="p-6 border-b border-[#e0c0b3]">
+            <div className="p-6 border-b border-outline-variant">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#8d7166] w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-outline w-5 h-5" />
                 <input 
                   type="text" 
                   placeholder="Search by name or roll no..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#f5f3f3] border border-[#e0c0b3] py-3 pl-12 pr-4 focus:outline-none focus:border-[#f46b24] font-['JetBrains_Mono',_monospace] text-sm"
+                  className="w-full bg-surface-container-low border border-transparent rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-primary-container font-mono text-sm"
                 />
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6 bg-[#fbf9f8]">
+            <div className="flex-1 overflow-y-auto p-6 bg-surface">
               {loading ? (
-                <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-[#f46b24]" /></div>
+                <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-primary-container" /></div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {filteredStudents.length === 0 ? (
-                    <div className="col-span-full p-4 text-center text-sm text-[#8d7166]">No students found.</div>
+                    <div className="col-span-full p-4 text-center text-sm text-outline">No students found.</div>
                   ) : (
                     filteredStudents.map(student => (
                       <div 
                         key={student.register_number}
                         onClick={() => toggleStudent(student.register_number)}
-                        className={`p-3 border cursor-pointer flex items-center justify-between transition-colors bg-white ${selectedStudents.includes(student.register_number) ? 'border-[#f46b24]' : 'border-[#e0c0b3] hover:border-[#1b1c1c]'}`}
+                        className={`p-3 border cursor-pointer flex items-center justify-between transition-colors bg-white ${selectedStudents.includes(student.register_number) ? 'border-primary-container' : 'border-outline-variant hover:border-outline'}`}
                       >
                         <div className="overflow-hidden">
-                          <div className="font-bold text-[#1b1c1c] text-sm truncate" title={student.name}>{student.name}</div>
-                          <div className="font-['JetBrains_Mono',_monospace] text-xs text-[#8d7166]">{student.register_number}</div>
+                          <div className="font-bold text-on-surface text-sm truncate" title={student.name}>{student.name}</div>
+                          <div className="font-mono text-xs text-outline">{student.register_number}</div>
                         </div>
-                        <div className={`w-5 h-5 shrink-0 border flex items-center justify-center transition-colors ${selectedStudents.includes(student.register_number) ? 'bg-[#f46b24] border-[#f46b24]' : 'border-[#1b1c1c]'}`}>
+                        <div className={`w-5 h-5 shrink-0 border flex items-center justify-center transition-colors ${selectedStudents.includes(student.register_number) ? 'bg-primary-container border-primary-container' : 'border-outline'}`}>
                           {selectedStudents.includes(student.register_number) && <Check className="w-3 h-3 text-white" />}
                         </div>
                       </div>
@@ -390,13 +390,13 @@ export default function ExportData() {
               )}
             </div>
             
-            <div className="p-6 border-t border-[#e0c0b3] flex justify-between items-center bg-white">
-              <div className="text-sm font-bold text-[#8d7166]">
-                <span className="text-[#f46b24] text-lg">{selectedStudents.length}</span> students selected
+            <div className="p-6 border-t border-outline-variant flex justify-between items-center bg-white">
+              <div className="text-sm font-bold text-outline">
+                <span className="text-primary-container text-lg">{selectedStudents.length}</span> students selected
               </div>
               <button 
                 onClick={() => setShowStudentModal(false)}
-                className="bg-[#f46b24] text-white px-8 py-3 font-bold uppercase tracking-widest block-shadow hover:bg-[#d55a1e] transition-colors"
+                className="bg-primary-container text-white px-8 py-3 font-bold uppercase tracking-wider shadow-sm hover:bg-[#d55a1e] transition-colors"
               >
                 Done
               </button>
@@ -407,40 +407,40 @@ export default function ExportData() {
 
       {/* Range Selection Modal */}
       {showRangeModal && (
-        <div className="fixed inset-0 bg-[#1b1c1c]/50 backdrop-blur-sm z-50 flex items-center justify-center p-0 sm:p-4">
-          <div className="bg-white sm:border-2 border-[#1b1c1c] w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-2xl flex flex-col sm:block-shadow">
-            <div className="flex justify-between items-center p-6 border-b border-[#e0c0b3] bg-[#fbf9f8]">
-              <h2 className="font-display font-bold text-xl uppercase tracking-wider text-[#1b1c1c]">
+        <div className="fixed inset-0 bg-on-surface/50 backdrop-blur-sm z-50 flex items-center justify-center p-0 sm:p-4">
+          <div className="bg-white sm:border-2 border-outline w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-2xl flex flex-col sm:shadow-sm rounded-xl">
+            <div className="flex justify-between items-center p-6 border-b border-outline-variant bg-surface">
+              <h2 className="font-display font-bold text-xl uppercase tracking-wider text-on-surface">
                 {rangeStep === 'start' ? 'Select START Roll Number' : 'Select END Roll Number'}
               </h2>
               <button 
                 onClick={() => setShowRangeModal(false)}
-                className="text-[#8d7166] hover:text-[#f46b24] transition-colors"
+                className="text-outline hover:text-primary-container transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
             
-            <div className="p-6 border-b border-[#e0c0b3]">
+            <div className="p-6 border-b border-outline-variant">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#8d7166] w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-outline w-5 h-5" />
                 <input 
                   type="text" 
                   placeholder="Search by name or roll no..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#f5f3f3] border border-[#e0c0b3] py-3 pl-12 pr-4 focus:outline-none focus:border-[#f46b24] font-['JetBrains_Mono',_monospace] text-sm"
+                  className="w-full bg-surface-container-low border border-transparent rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-primary-container font-mono text-sm"
                 />
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6 bg-[#fbf9f8]">
+            <div className="flex-1 overflow-y-auto p-6 bg-surface">
               {loading ? (
-                <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-[#f46b24]" /></div>
+                <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-primary-container" /></div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {filteredStudents.length === 0 ? (
-                    <div className="col-span-full p-4 text-center text-sm text-[#8d7166]">No students found.</div>
+                    <div className="col-span-full p-4 text-center text-sm text-outline">No students found.</div>
                   ) : (
                     filteredStudents.map(student => {
                       const isStart = student.register_number === startRoll;
@@ -449,9 +449,9 @@ export default function ExportData() {
                         (rangeStep === 'start' && isStart) ||
                         (rangeStep === 'end' && isEnd);
                       
-                      let borderClass = 'border-[#e0c0b3] hover:border-[#1b1c1c]';
-                      if (isStart) borderClass = 'border-[#f46b24] bg-[#fbf9f8]';
-                      else if (isSelected) borderClass = 'border-[#f46b24] bg-[#fbf9f8]';
+                      let borderClass = 'border-outline-variant hover:border-outline';
+                      if (isStart) borderClass = 'border-primary-container bg-surface';
+                      else if (isSelected) borderClass = 'border-primary-container bg-surface';
                       
                       return (
                         <div 
@@ -460,11 +460,11 @@ export default function ExportData() {
                           className={`p-3 border cursor-pointer flex items-center justify-between transition-colors bg-white ${borderClass}`}
                         >
                           <div className="overflow-hidden">
-                            <div className="font-bold text-[#1b1c1c] text-sm truncate flex items-center gap-2" title={student.name}>
+                            <div className="font-bold text-on-surface text-sm truncate flex items-center gap-2" title={student.name}>
                               {student.name}
-                              {isStart && <span className="text-[9px] bg-[#f46b24] text-white px-1.5 py-0.5 uppercase tracking-wider font-bold">Start</span>}
+                              {isStart && <span className="text-[9px] bg-primary-container text-white px-1.5 py-0.5 uppercase tracking-wider font-bold">Start</span>}
                             </div>
-                            <div className="font-['JetBrains_Mono',_monospace] text-xs text-[#8d7166]">{student.register_number}</div>
+                            <div className="font-mono text-xs text-outline">{student.register_number}</div>
                           </div>
                         </div>
                       );

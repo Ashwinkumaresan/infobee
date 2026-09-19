@@ -1,8 +1,89 @@
 import React, { useState } from 'react';
-import { Github, TerminalSquare, Globe, Link as LinkIcon, ChevronDown, Plus, Minus, Lightbulb, Zap, Copy, Check } from 'lucide-react';
+import { Github, TerminalSquare, Globe, Link as LinkIcon, ChevronDown, Plus, Minus, Lightbulb, Zap, Copy, Check, X } from 'lucide-react';
+import { API_URL } from '../../api';
 
 export default function PortfolioLanding() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  // Flow State
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [portfolioLink, setPortfolioLink] = useState('');
+  
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  const getToken = () => {
+    const match = document.cookie.match(new RegExp('(^| )access_token=([^;]+)'));
+    return match ? match[2] : null;
+  };
+
+  const handleStartSubmit = () => {
+    if (!getToken()) {
+      setShowLoginModal(true);
+    } else {
+      setShowLinkModal(true);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoginLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/token/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: loginEmail.split('@')[0].toUpperCase(), password: loginPassword }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        document.cookie = `access_token=${data.access}; path=/; max-age=86400`;
+        setShowLoginModal(false);
+        setShowLinkModal(true);
+      } else {
+        setLoginError('Invalid email or password');
+      }
+    } catch (err) {
+      setLoginError('Server connection error.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleConfirmSubmit = async () => {
+    if (!portfolioLink) return;
+    setIsConfirming(true);
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_URL}/student/profile/`, {
+        method: 'PATCH',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ portfolio_link: portfolioLink })
+      });
+      if (res.ok) {
+        alert("Portfolio updated successfully!");
+        setShowPreviewModal(false);
+        setPortfolioLink('');
+      } else {
+        alert("Failed to update portfolio link.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating portfolio link.");
+    } finally {
+      setIsConfirming(false);
+    }
+  };
 
   const handleCopy = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
@@ -404,25 +485,15 @@ export default function PortfolioLanding() {
 
         {/* 6. Closing CTA */}
         <section className="relative py-10 sm:py-16 px-4 sm:px-6 bg-brand-orange text-white text-center border-t border-neutral-900 overflow-hidden" id="submit">
-          {/* Coming Soon Overlay */}
-          <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-md bg-black/5">
-            <div className="bg-white/95 backdrop-blur-xl border-2 border-neutral-900 px-8 sm:px-12 py-6 sm:py-8 shadow-brutal flex flex-col items-center gap-3 mx-4">
-              <span className="text-3xl sm:text-4xl">⏳</span>
-              <span className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 uppercase tracking-widest">
-                Coming Soon
-              </span>
-              <p className="font-sans text-xs sm:text-sm text-gray-500 max-w-xs text-center">
-                The portfolio submission portal will open soon. Get your projects ready!
-              </p>
-            </div>
-          </div>
-
-          <div className="relative max-w-3xl mx-auto select-none pointer-events-none">
+          <div className="relative max-w-3xl mx-auto">
             <h2 className="font-display text-white text-2xl sm:text-3xl md:text-4xl font-bold leading-tight tracking-tight uppercase mb-6 sm:mb-8">
               Ready to submit your portfolio?
             </h2>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-              <button className="bg-white text-brand-orange font-poppins font-bold uppercase tracking-wider px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base border-2 border-white opacity-70 w-full sm:w-auto" disabled>
+              <button 
+                onClick={handleStartSubmit}
+                className="bg-white !text-brand-orange hover:bg-neutral-100 transition-colors cursor-pointer font-poppins font-bold uppercase tracking-wider px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base border-2 border-white w-full sm:w-auto"
+              >
                 Submit Your Portfolio
               </button>
             </div>
@@ -439,6 +510,138 @@ export default function PortfolioLanding() {
           © {new Date().getFullYear()} Department of IT. All rights reserved.
         </div>
       </footer>
+
+      {/* MODALS */}
+
+      {/* 1. Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white border-2 border-neutral-900 p-8 w-full max-w-sm shadow-brutal relative">
+            <button 
+              onClick={() => setShowLoginModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-black font-bold text-xl leading-none cursor-pointer"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold font-display uppercase tracking-widest text-gray-900 mb-2">Login Required</h2>
+            <p className="text-sm text-gray-600 mb-6">Please sign in to submit your portfolio.</p>
+            
+            <form onSubmit={handleLogin} className="space-y-4">
+              {loginError && <p className="text-red-600 text-xs font-bold uppercase">{loginError}</p>}
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-700 mb-1">College Email</label>
+                <input 
+                  type="email" 
+                  className="w-full border-2 border-neutral-200 focus:border-brand-orange outline-none px-3 py-2 rounded-none text-sm"
+                  value={loginEmail}
+                  onChange={e => setLoginEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-700 mb-1">Password</label>
+                <input 
+                  type="password" 
+                  className="w-full border-2 border-neutral-200 focus:border-brand-orange outline-none px-3 py-2 rounded-none text-sm"
+                  value={loginPassword}
+                  onChange={e => setLoginPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={loginLoading}
+                className="w-full bg-brand-orange text-white font-bold uppercase tracking-widest text-xs py-3 hover:bg-brand-orange-hover transition-colors cursor-pointer"
+              >
+                {loginLoading ? 'Authenticating...' : 'Sign In'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Portfolio Link Input Modal */}
+      {showLinkModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white border-2 border-neutral-900 p-8 w-full max-w-lg shadow-brutal relative">
+            <button 
+              onClick={() => setShowLinkModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-black font-bold text-xl leading-none cursor-pointer"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold font-display uppercase tracking-widest text-gray-900 mb-2">Submit Link</h2>
+            <p className="text-sm text-gray-600 mb-6">Enter the live URL of your portfolio (e.g. Vercel, GitHub Pages, Netlify).</p>
+            
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (portfolioLink.trim()) {
+                setShowLinkModal(false);
+                setShowPreviewModal(true);
+              }
+            }} className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-700 mb-1">Portfolio URL</label>
+                <input 
+                  type="url" 
+                  placeholder="https://your-portfolio.vercel.app"
+                  className="w-full border-2 border-neutral-200 focus:border-brand-orange outline-none px-3 py-3 rounded-none text-sm font-mono"
+                  value={portfolioLink}
+                  onChange={e => setPortfolioLink(e.target.value)}
+                  required
+                />
+              </div>
+              <button 
+                type="submit" 
+                className="w-full bg-brand-orange text-white font-bold uppercase tracking-widest text-xs py-3 hover:bg-brand-orange-hover transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
+                Preview &amp; Confirm <Globe className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Fullscreen Iframe Preview & Confirmation */}
+      {showPreviewModal && (
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col">
+          {/* Top Control Bar */}
+          <div className="bg-neutral-900 text-white p-4 flex items-center justify-between shrink-0 shadow-md z-10">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+              <h2 className="font-display font-bold uppercase tracking-widest text-sm sm:text-lg">Portfolio Preview</h2>
+              <span className="bg-neutral-800 text-gray-300 px-2 py-0.5 text-xs font-mono">{portfolioLink}</span>
+            </div>
+            
+            <div className="flex items-center gap-2 sm:gap-4">
+              <button 
+                onClick={() => setShowPreviewModal(false)}
+                className="text-gray-400 hover:text-white px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1"
+                disabled={isConfirming}
+              >
+                <X className="w-4 h-4" /> Cancel
+              </button>
+              
+              <button 
+                onClick={handleConfirmSubmit}
+                disabled={isConfirming}
+                className="bg-brand-orange hover:bg-brand-orange-hover text-white px-4 sm:px-6 py-2 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-2 shadow-brutal"
+              >
+                {isConfirming ? 'Saving...' : 'Confirm Submission'} <Check className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          
+          {/* Iframe Area */}
+          <div className="flex-grow w-full bg-neutral-100 relative overflow-hidden">
+            <iframe 
+              src={portfolioLink}
+              title="Portfolio Preview"
+              className="w-full h-full border-none absolute inset-0"
+              sandbox="allow-scripts allow-same-origin"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

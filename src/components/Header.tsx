@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Award, ChevronRight, Sparkles, LogIn } from 'lucide-react';
+import { Menu, X, Award, ChevronRight, Sparkles, LogIn, ChevronDown } from 'lucide-react';
 
 interface HeaderProps {
   onJoinClick: () => void;
@@ -16,15 +16,26 @@ interface HeaderProps {
 export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLoggedIn, activeSection, currentPage = 'home', onNavigate }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
   const userRole = localStorage.getItem('user_role');
   const profileRoute = userRole === 'staff' ? '/staff/profile' : '/student/profile';
 
-  const navItems = [
-    { name: 'HOME', href: '#home' },
-    { name: 'RESEARCH', href: '#research' },
-    { name: 'PORTFOLIO', href: '#portfolio' },
-    { name: 'GALLERY', href: '/gallery' },
+    const navItems = [
+    { 
+      name: 'THE CHALLENGE', 
+      href: '#challenge',
+      subItems: [
+        { name: 'ROUND 1', href: '#round1' },
+        { name: 'ROUND 2', href: '#round2' },
+        { name: 'ROUND 3', href: '#round3' },
+      ]
+    },
+    { name: 'FAQ', href: '#faq' },
   ];
+  
+  if (isRegistrationOpen) {
+    navItems.push({ name: 'REGISTER', href: '#register' });
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,34 +50,33 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/hackathon/available-scenarios/')
+      .then(res => res.json())
+      .then(data => {
+        if (data.is_registration_open === false) {
+          setIsRegistrationOpen(false);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     setIsOpen(false);
     
-    if (href === '#research') {
+    if (href === '/hackathon') {
       if (onNavigate) {
-        onNavigate('research');
+        onNavigate('hackathon' as any);
       }
       return;
     }
 
-    if (href === '#portfolio') {
+    if (href.startsWith('#')) {
+      const sectionId = href.substring(1);
       if (onNavigate) {
-        onNavigate('portfolio');
+        onNavigate(currentPage, sectionId);
       }
-      return;
-    }
-
-    if (href === '/gallery') {
-      if (onNavigate) {
-        onNavigate('gallery');
-      }
-      return;
-    }
-
-    const sectionId = href.substring(1);
-    if (onNavigate) {
-      onNavigate('home', sectionId);
     }
   };
 
@@ -83,13 +93,13 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
           {/* Logo */}
           <a href="#home" onClick={(e) => handleNavClick(e, '#home')} className="flex items-center space-x-2 group">
             {/* Logo Geometric Origami Fold */}
-            <img src="./Logo.jpg" alt="Infobee Logo" className="w-12 h-12" />
+            <img src="/Logo.jpg" alt="Infobee Logo" className="w-12 h-12" />
             <div className="flex flex-col">
               <span className="font-display text-xl font-bold tracking-tight text-gray-900 leading-none group-hover:text-brand-orange transition-colors">
                 Infobee
               </span>
-              <span className="text-[9px] font-mono tracking-wider text-gray-500 leading-none mt-0.5">
-                IT ASSOCIATION • MCET
+              <span className="text-[9px] tracking-wider text-gray-500 leading-none mt-0.5">
+                IT Association • DR. MCET
               </span>
             </div>
           </a>
@@ -97,27 +107,44 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => {
-              const isActive = activeSection === item.href.substring(1);
+              const isActive = activeSection === item.href.substring(1) || item.subItems?.some(sub => activeSection === sub.href.substring(1));
               return (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className={`text-xs font-semibold tracking-wider relative py-1 transition-colors ${
-                    isActive 
-                      ? 'text-brand-orange' 
-                      : 'text-gray-600 hover:text-brand-orange'
-                  }`}
-                >
-                  {item.name}
-                  {isActive && (
-                    <motion.span
-                      layoutId="activeUnderline"
-                      className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-orange rounded-full"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
+                <div key={item.name} className="relative group">
+                  <a
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className={`text-xs font-semibold tracking-wider relative py-1 flex items-center gap-1 transition-colors ${
+                      isActive 
+                        ? 'text-brand-orange' 
+                        : 'text-gray-600 hover:text-brand-orange'
+                    }`}
+                  >
+                    {item.name}
+                    {item.subItems && <ChevronDown className="w-3.5 h-3.5" />}
+                    {isActive && (
+                      <motion.span
+                        layoutId="activeUnderline"
+                        className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-orange rounded-full"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </a>
+                  {item.subItems && (
+                    <div className="absolute left-0 mt-6 w-40 bg-white border border-gray-100 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <div className="absolute -top-6 left-0 w-full h-6"></div>
+                      {item.subItems.map((subItem) => (
+                        <a
+                          key={subItem.name}
+                          href={subItem.href}
+                          onClick={(e) => handleNavClick(e, subItem.href)}
+                          className="block px-4 py-3 text-xs font-semibold tracking-wider text-gray-600 hover:bg-gray-50 hover:text-brand-orange transition-colors first:rounded-t-md last:rounded-b-md"
+                        >
+                          {subItem.name}
+                        </a>
+                      ))}
+                    </div>
                   )}
-                </a>
+                </div>
               );
             })}
           </nav>
@@ -179,20 +206,36 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
           >
             <div className="px-4 pt-2 pb-6 space-y-3">
               {navItems.map((item) => {
-                const isActive = activeSection === item.href.substring(1);
+                const isActive = activeSection === item.href.substring(1) || item.subItems?.some(sub => activeSection === sub.href.substring(1));
                 return (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    onClick={(e) => handleNavClick(e, item.href)}
-                    className={`block px-3 py-2.5 rounded-sm text-sm font-semibold tracking-wider transition-colors ${
-                      isActive 
-                        ? 'bg-orange-50 text-brand-orange font-bold' 
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-brand-orange'
-                    }`}
-                  >
-                    {item.name}
-                  </a>
+                  <div key={item.name} className="space-y-1">
+                    <a
+                      href={item.href}
+                      onClick={(e) => handleNavClick(e, item.href)}
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-sm text-sm font-semibold tracking-wider transition-colors ${
+                        isActive 
+                          ? 'bg-orange-50 text-brand-orange font-bold' 
+                          : 'text-gray-700 hover:bg-gray-50 hover:text-brand-orange'
+                      }`}
+                    >
+                      {item.name}
+                      {item.subItems && <ChevronDown className="w-4 h-4 text-gray-400" />}
+                    </a>
+                    {item.subItems && (
+                      <div className="pl-6 space-y-1 pb-2">
+                        {item.subItems.map(sub => (
+                          <a
+                            key={sub.name}
+                            href={sub.href}
+                            onClick={(e) => handleNavClick(e, sub.href)}
+                            className="block px-3 py-2 rounded-sm text-sm font-semibold tracking-wider text-gray-500 hover:bg-gray-50 hover:text-brand-orange transition-colors"
+                          >
+                            {sub.name}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
 

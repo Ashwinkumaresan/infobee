@@ -6,6 +6,8 @@ import ResearchPapers from './pages/research/ResearchPapers';
 import SubmitPaper from './pages/research/SubmitPaper';
 import Detail from './pages/research/Detail';
 import PortfolioLanding from './pages/portfolio/Portfolio';
+import Hackathon from './pages/hackathon/Hackathon';
+import Registration from './pages/hackathon/Registration';
 import Footer from './components/Footer';
 import { CalendarModal, JoinModal } from './components/Modals';
 import AdminPortal from './components/AdminPortal';
@@ -25,7 +27,7 @@ import { Toaster } from 'react-hot-toast';
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const currentPage = location.pathname.startsWith('/research') ? 'research' : location.pathname.startsWith('/portfolio') ? 'portfolio' : location.pathname.startsWith('/gallery') ? 'gallery' : 'home';
+  const currentPage = location.pathname.startsWith('/hackathon') ? 'hackathon' : location.pathname.startsWith('/research') ? 'research' : location.pathname.startsWith('/portfolio') ? 'portfolio' : location.pathname.startsWith('/gallery') ? 'gallery' : 'home';
   const isAuthPage = location.pathname.startsWith('/student/signin') || location.pathname.startsWith('/student/signup') || location.pathname.startsWith('/forgot-password') || location.pathname.startsWith('/staff/signin');
   const [activeSection, setActiveSection] = useState('home');
   const [isJoinOpen, setIsJoinOpen] = useState(false);
@@ -140,11 +142,13 @@ export default function App() {
     }
   }, [currentPage]);
 
-  // Scroll spy to update Navbar active section marker when on home page
+  // Scroll spy to update Navbar active section marker
   useEffect(() => {
-    if (currentPage !== 'home') return;
+    if (currentPage !== 'home' && currentPage !== 'hackathon') return;
     const handleScroll = () => {
-      const sections = ['home', 'events', 'about', 'gallery', 'programs', 'contact'];
+      const sections = currentPage === 'hackathon'
+        ? ['challenge', 'round1', 'round2', 'round3', 'faq', 'register']
+        : ['home', 'events', 'about', 'gallery', 'programs', 'contact'];
       const scrollPosition = window.scrollY + 120;
 
       for (const section of sections) {
@@ -209,16 +213,22 @@ export default function App() {
     setContactSubmissions((prev) => prev.filter((sub) => sub.id !== submissionId));
   };
 
-  const handleNavigatePage = (page: 'home' | 'research' | 'portfolio' | 'gallery', sectionId?: string) => {
-    if (page === 'research' || page === 'portfolio' || page === 'gallery') {
+  const handleNavigatePage = (page: 'home' | 'research' | 'portfolio' | 'gallery' | 'hackathon', sectionId?: string) => {
+    if ((page === 'research' || page === 'portfolio' || page === 'gallery' || page === 'hackathon') && !sectionId) {
       navigate(`/${page}`);
       setActiveSection(page);
       window.scrollTo({ top: 0, behavior: 'instant' });
       return;
     }
 
-    if (location.pathname !== '/') {
-      navigate('/');
+    if (page === 'hackathon' && sectionId) {
+       if (location.pathname !== '/hackathon') {
+         navigate('/hackathon');
+       }
+    } else if (page === 'home') {
+       if (location.pathname !== '/') {
+         navigate('/');
+       }
     }
     
     if (!sectionId || sectionId === 'home') {
@@ -246,6 +256,7 @@ export default function App() {
 
   const isProfilePage = location.pathname.startsWith('/student/profile') || location.pathname.startsWith('/staff/profile') || location.pathname.startsWith('/staff/student') || location.pathname.startsWith('/staff/export');
   const isPortfolioPage = location.pathname.startsWith('/portfolio');
+  const isRegistrationPage = location.pathname === '/hackathon/register';
 
   return (
     <div className="min-h-screen bg-white text-gray-900 selection:bg-brand-orange selection:text-white antialiased">
@@ -286,6 +297,11 @@ export default function App() {
       {/* Main Structural Page Flow */}
       <main>
         <Routes>
+          <Route path="/hackathon" element={<Hackathon />} />
+          <Route path="/hackathon/register" element={<Registration />} />
+          <Route path="/" element={<Navigate to="/hackathon" replace />} />
+          
+          {/* 
           <Route 
             path="/" 
             element={
@@ -303,6 +319,8 @@ export default function App() {
           <Route path="/research/:paperId" element={<Detail />} />
           <Route path="/portfolio" element={<PortfolioLanding />} />
           <Route path="/gallery" element={<EventGallery />} />
+          */}
+          
           <Route path="/student/signup" element={<StudentSignup />} />
           <Route path="/student/signin" element={<StudentSignin setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/staff/signin" element={<StaffSignin setIsLoggedIn={setIsLoggedIn} />} />
@@ -311,14 +329,14 @@ export default function App() {
           <Route path="/staff/profile/:tab?" element={<StaffProfile />} />
           <Route path="/staff/student/:rollNo" element={<StudentDetail />} />
           <Route path="/staff/export" element={<ExportData />} />
-          
-          {/* Catch-all route to redirect unknown paths to home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+
+          {/* Catch-all route to redirect unknown paths to hackathon */}
+          <Route path="*" element={<Navigate to="/hackathon" replace />} />
         </Routes>
       </main>
 
       {/* Footer Block */}
-      {!isAuthPage && !isPortfolioPage && !isProfilePage && (
+      {!isAuthPage && !isPortfolioPage && !isProfilePage && !isRegistrationPage && (
         <Footer
           onNavClick={(selector) => {
             if (selector === '#research') {

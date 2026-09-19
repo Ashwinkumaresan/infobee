@@ -5,16 +5,21 @@ import toast from 'react-hot-toast';
 import { API_URL, BASE_URL } from '../../api';
 
 export default function StudentProfile() {
-  const [activeTab, setActiveTab] = useState('Personal & Family Info');
+  const [activeTab, setActiveTab] = useState('Hackathon Details');
   const navigate = useNavigate();
 
   const tabs = [
-    'Personal & Family Info',
-    'Education History',
-    'Academic Performance',
-    'Coding & Links',
-    'Research Papers'
+    'Hackathon Details',
+    // 'Personal & Family Info',
+    // 'Education History',
+    // 'Academic Performance',
+    // 'Coding & Links',
+    // 'Research Papers'
   ];
+
+  const [hackathonData, setHackathonData] = useState<any>(null);
+  const [uploadingPpt, setUploadingPpt] = useState(false);
+  const [pptFile, setPptFile] = useState<File | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -64,7 +69,7 @@ export default function StudentProfile() {
 
         if (response.ok) {
           const apiData = await response.json();
-          
+
           // Map backend snake_case to frontend camelCase
           const mappedData = {
             // 1. Personal Info
@@ -78,7 +83,7 @@ export default function StudentProfile() {
             mobileNumber: apiData.mobile_number || "N/A",
             personalEmail: apiData.personal_email || "N/A",
             officialEmail: apiData.official_email || "N/A",
-            
+
             // Parents & Address
             fatherName: apiData.father_name || "N/A",
             fatherOccupation: apiData.father_occupation || "N/A",
@@ -89,7 +94,7 @@ export default function StudentProfile() {
             nativeLocation: apiData.native_location || "N/A",
             communicationAddress: apiData.communication_address || "N/A",
             permanentAddress: apiData.permanent_address || "N/A",
-          
+
             // 2. Education History
             school10th: apiData.school_10th || "N/A",
             board10th: apiData.board_10th || "N/A",
@@ -103,22 +108,22 @@ export default function StudentProfile() {
             polytechnicDept: apiData.polytechnic_dept || "N/A",
             diplomaPercentage: apiData.diploma_percentage || "N/A",
             educationalGap: apiData.educational_gap || "N/A",
-          
+
             // 3. Academic Performance
             sgpa: {
-              sem1: apiData.sem1_sgpa || "N/A", 
-              sem2: apiData.sem2_sgpa || "N/A", 
-              sem3: apiData.sem3_sgpa || "N/A", 
+              sem1: apiData.sem1_sgpa || "N/A",
+              sem2: apiData.sem2_sgpa || "N/A",
+              sem3: apiData.sem3_sgpa || "N/A",
               sem4: apiData.sem4_sgpa || "N/A",
-              sem5: apiData.sem5_sgpa || "N/A", 
-              sem6: apiData.sem6_sgpa || "N/A", 
-              sem7: apiData.sem7_sgpa || "N/A", 
+              sem5: apiData.sem5_sgpa || "N/A",
+              sem6: apiData.sem6_sgpa || "N/A",
+              sem7: apiData.sem7_sgpa || "N/A",
               sem8: apiData.sem8_sgpa || "N/A"
             },
             cgpa: apiData.cgpa || "N/A",
             currentArrears: apiData.current_arrears || "0",
             historyOfArrears: apiData.history_of_arrears || "0",
-          
+
             // 4. Coding & Links
             linkedinId: apiData.linkedin_id || "",
             githubId: apiData.github_id || "",
@@ -167,16 +172,74 @@ export default function StudentProfile() {
       }
     };
 
+    const fetchHackathonData = async () => {
+      const token = getCookie('access_token');
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/hackathon/my-team/`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setHackathonData(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch hackathon data:', err);
+      }
+    };
+
     fetchProfile();
     fetchStats();
+    fetchHackathonData();
   }, [navigate]);
+
+  const handlePptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validExtensions = ['application/pdf', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
+    if (!validExtensions.includes(file.type)) {
+      toast.error('Only PDF and PPT/PPTX files are allowed.');
+      return;
+    }
+
+    setPptFile(file);
+    setUploadingPpt(true);
+    const token = getCookie('access_token');
+    if (!token) return;
+
+    const formData = new FormData();
+    formData.append('ppt_file', file);
+
+    try {
+      const response = await fetch(`${API_URL}/hackathon/my-team/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(data.message);
+        setHackathonData((prev: any) => ({ ...prev, ppt_file: data.ppt_file }));
+      } else {
+        const errData = await response.json();
+        toast.error(errData.error || 'Upload failed');
+      }
+    } catch (err) {
+      toast.error('Network error during upload');
+    } finally {
+      setUploadingPpt(false);
+    }
+  };
 
   const handleSendUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!updateMessage.trim()) return;
-    
+
     setIsSendingUpdate(true);
-    
+
     try {
       const token = getCookie('access_token');
       const res = await fetch(`${API_URL}/student/request-update/`, {
@@ -187,7 +250,7 @@ export default function StudentProfile() {
         },
         body: JSON.stringify({ message: updateMessage })
       });
-      
+
       const data = await res.json();
       if (res.ok) {
         toast.success('Update request sent successfully!');
@@ -205,15 +268,15 @@ export default function StudentProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fbf9f8]">
-        <Loader2 className="animate-spin h-12 w-12 text-[#f46b24]" />
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <Loader2 className="animate-spin h-12 w-12 text-primary-container" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fbf9f8]">
+      <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="text-red-600 p-4 border border-red-300 bg-red-50 rounded-lg">{error}</div>
       </div>
     );
@@ -236,16 +299,16 @@ export default function StudentProfile() {
 
   // Helper component for fields
   const Field = ({ label, value }: { label: string, value: string }) => (
-    <div className="border-b border-[#e0c0b3] pb-4">
-      <label className="font-[`JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] mb-1 block">{label}</label>
-      <p className="font-sans text-lg text-[#1b1c1c] font-medium break-words">{value}</p>
+    <div className="border-b border-gray-100 pb-2">
+      <label className="text-xs text-gray-500 font-semibold mb-1 block">{label}</label>
+      <p className="font-sans text-base text-gray-900 font-medium break-words">{value}</p>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#fbf9f8] font-sans text-[#1b1c1c]">
+    <div className="min-h-screen bg-white font-sans text-gray-900">
       <style>{`
-        .block-shadow {
+        .shadow-sm rounded-xl {
             box-shadow: 4px 4px 0px 0px rgba(27, 28, 28, 0.1);
         }
         .active-tab-indicator {
@@ -257,32 +320,32 @@ export default function StudentProfile() {
             left: 0;
         }
       `}</style>
-      
+
       {/* Student Hero Banner Section */}
-      <section className="bg-[#f5f3f3] pt-12 pb-6 border-b border-[#e0c0b3] relative overflow-hidden">
-        <div className="max-w-[1280px] mx-auto px-6 md:px-12 relative z-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+      <section className="bg-white pt-8 pb-4 border-b border-gray-100 relative overflow-hidden">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8 relative z-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
               {/* Basic Info */}
               <div className="space-y-1">
-                <h1 className="font-sans text-3xl font-bold tracking-tight text-[#1b1c1c]">{data.name}</h1>
-                <p className="font-['JetBrains_Mono',_monospace] text-[#f46b24] font-medium tracking-wider">REG NO: {data.registerNumber} • YR: {data.year} • SEC: {data.section}</p>
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <span className="bg-[#e4e2e2] px-3 py-1 font-['JetBrains_Mono',_monospace] text-xs uppercase border border-[#e0c0b3]">B.Tech IT</span>
-                  <span className="bg-[#e4e2e2] px-3 py-1 font-['JetBrains_Mono',_monospace] text-xs uppercase border border-[#e0c0b3]">CGPA: {data.cgpa}</span>
+                <h1 className="font-display-hero text-3xl md:text-4xl font-bold tracking-tight text-[#1B1C1C] leading-tight break-words">{data.name}</h1>
+                <p className="text-sm font-medium text-gray-500 mt-1">Reg No: {data.registerNumber} • Yr: {data.year} • Sec: {data.section}</p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <span className="bg-gray-100 px-2 py-1 text-xs font-semibold rounded text-gray-800">B.Tech IT</span>
+                  {/* <span className="bg-gray-100 px-2 py-1 text-xs font-semibold rounded text-gray-800">CGPA: {data.cgpa}</span> */}
                 </div>
               </div>
             </div>
-            <div className="flex flex-wrap gap-4 mt-4 md:mt-0">
-              <button 
+            <div className="flex flex-wrap gap-3 mt-4 md:mt-0">
+              <button
                 onClick={() => setIsUpdateModalOpen(true)}
-                className="bg-[#f46b24] text-white px-6 py-3 font-sans text-sm uppercase tracking-widest block-shadow hover:bg-[#d55a1e] transition-colors whitespace-nowrap"
+                className="bg-[#F46B24] text-white text-sm font-semibold px-4 py-2 rounded hover:bg-[#d55a1e] transition-colors whitespace-nowrap"
               >
                 Request Update
               </button>
-              <button 
+              <button
                 onClick={handleLogout}
-                className="bg-[#1b1c1c] text-white px-6 py-3 font-sans text-sm uppercase tracking-widest block-shadow hover:bg-[#333] transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                className="bg-[#1B1C1C] text-white text-sm font-semibold px-4 py-2 rounded hover:bg-black transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
@@ -292,8 +355,8 @@ export default function StudentProfile() {
         </div>
       </section>
 
-      {/* Profile Tabs - Sticky */}
-      <div className="sticky top-0 z-40 bg-[#f5f3f3] border-b border-[#e0c0b3] shadow-sm">
+      {/* Profile Tabs - Sticky (Commented out as there's only one tab now) */}
+      <div className="sticky top-0 z-40 bg-surface-container-lowest border-b border-outline-variant shadow-sm">
         <div className="max-w-[1280px] mx-auto px-6 md:px-12">
           <nav className="flex overflow-x-auto no-scrollbar pt-2">
             {tabs.map((tab) => {
@@ -302,9 +365,7 @@ export default function StudentProfile() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`relative px-6 py-4 font-sans text-xs md:text-sm uppercase tracking-widest whitespace-nowrap transition-colors ${
-                    isActive ? 'text-[#f46b24] font-bold' : 'text-[#594238] hover:text-[#f46b24]'
-                  }`}
+                  className={`relative px-6 py-4 font-sans text-sm font-medium tracking-wide whitespace-nowrap transition-colors ${isActive ? 'text-[#F46B24] font-bold' : 'text-gray-500 hover:text-[#F46B24]'}`}
                 >
                   {tab}
                   {isActive && <div className="active-tab-indicator"></div>}
@@ -315,17 +376,125 @@ export default function StudentProfile() {
         </div>
       </div>
 
+
       {/* Main Content Area */}
-      <section className="max-w-[1280px] mx-auto px-6 md:px-12 py-12">
-        
+      <section className="max-w-[1280px] mx-auto px-4 md:px-8 py-8">
+
+        {/* TAB 0: Hackathon Details */}
+        {activeTab === 'Hackathon Details' && (
+          <div className="grid grid-cols-1 gap-6 w-full">
+            <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 relative">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 tracking-tight">Hackathon Team Details</h2>
+
+              {!hackathonData || !hackathonData.registered ? (
+                <div className="text-gray-600 p-6 bg-gray-50 border border-gray-100 rounded-xl text-center">
+                  <p className="text-sm font-medium mb-4">You have not registered for the hackathon yet.</p>
+                  <Link to="/hackathon" className="inline-block px-4 py-2 bg-[#1B1C1C] text-white text-sm font-semibold rounded hover:bg-black transition-colors">
+                    Go to Hackathon Page
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Team Info */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-5 bg-gray-50 border border-gray-100 rounded-xl">
+                    <Field label="Team Name" value={hackathonData.team_name} />
+                    <Field label="Scenario Allocated" value={hackathonData.scenario_allocated || 'Pending Allocation'} />
+                    <Field label="Leader Name" value={hackathonData.leader_name} />
+                    <Field label="Leader Roll No" value={hackathonData.leader_roll} />
+                  </div>
+
+                  {/* Team Members */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-500 border-b border-gray-100 pb-2 mb-3">Team Members</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {hackathonData.team_members && hackathonData.team_members.map((member: any, i: number) => (
+                        <div key={i} className="flex flex-col p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
+                          <span className="font-medium text-[#1B1C1C] text-sm">{member.name}</span>
+                          <span className="text-xs text-gray-500 mt-1">{member.roll}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Progress & Status */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-500 border-b border-gray-100 pb-2 mb-3">Team Progress</h3>
+                    <div className="flex flex-wrap gap-2">
+                      <div className={`px-3 py-1 rounded-full font-semibold text-xs ${hackathonData.is_round_1_selected ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-50 text-gray-500 border border-gray-100'}`}>
+                        Round 1 {hackathonData.is_round_1_selected ? 'Selected' : 'Pending'}
+                      </div>
+                      <div className={`px-3 py-1 rounded-full font-semibold text-xs ${hackathonData.is_round_2_selected ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-50 text-gray-500 border border-gray-100'}`}>
+                        Round 2 {hackathonData.is_round_2_selected ? 'Selected' : 'Pending'}
+                      </div>
+                      <div className={`px-3 py-1 rounded-full font-semibold text-xs ${hackathonData.is_round_3_selected ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-50 text-gray-500 border border-gray-100'}`}>
+                        Round 3 {hackathonData.is_round_3_selected ? 'Selected' : 'Pending'}
+                      </div>
+                      {hackathonData.is_winner && (
+                        <div className="px-3 py-1 rounded-full font-semibold text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                          Winner
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Submission */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-500 border-b border-gray-100 pb-2 mb-3">Presentation Submission</h3>
+                    {hackathonData.ppt_file ? (
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-orange-50 border border-orange-100 rounded-xl">
+                        <div className="flex items-center gap-3 mb-3 sm:mb-0">
+                          <FileText className="w-5 h-5 text-[#F46B24]" />
+                          <div>
+                            <p className="font-semibold text-[#1B1C1C] text-sm">Presentation Uploaded</p>
+                            <a href={BASE_URL + hackathonData.ppt_file} target="_blank" rel="noopener noreferrer" className="text-xs text-[#F46B24] hover:underline font-medium">View File</a>
+                          </div>
+                        </div>
+                        {hackathonData.is_leader && !hackathonData.is_ppt_time_end && (
+                          <label className="cursor-pointer bg-white border border-[#F46B24] text-[#F46B24] text-xs font-semibold px-4 py-2 rounded hover:bg-orange-50 transition-colors">
+                            {uploadingPpt ? 'Uploading...' : 'Re-upload PPT'}
+                            <input type="file" className="hidden" accept=".ppt,.pptx,.pdf" onChange={handlePptUpload} disabled={uploadingPpt} />
+                          </label>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="p-5 border border-dashed border-gray-300 rounded-xl bg-gray-50 flex flex-col items-center justify-center text-center">
+                        {hackathonData.is_leader && !hackathonData.is_ppt_time_end ? (
+                          <>
+                            <FileText className="w-6 h-6 text-gray-400 mb-2" />
+                            <p className="text-sm font-medium text-gray-600 mb-3">No presentation uploaded yet.</p>
+                            <label className="cursor-pointer bg-[#F46B24] text-white text-xs font-semibold px-4 py-2 rounded hover:bg-[#d55a1e] transition-colors flex items-center">
+                              {uploadingPpt ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Uploading...
+                                </>
+                              ) : 'Upload Presentation'}
+                              <input type="file" className="hidden" accept=".ppt,.pptx,.pdf" onChange={handlePptUpload} disabled={uploadingPpt} />
+                            </label>
+                          </>
+                        ) : (
+                          <p className="text-sm font-medium text-gray-500">
+                            {hackathonData.is_ppt_time_end 
+                              ? "Presentation submission time has ended." 
+                              : `Only the team leader (${hackathonData.leader_name}) can upload the presentation file.`}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* TAB 1: Personal & Family Info */}
         {activeTab === 'Personal & Family Info' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
             {/* Student Info Card */}
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow relative">
-              <div className="absolute left-0 top-0 w-1.5 h-16 bg-[#f46b24]"></div>
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6">Student Details</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 relative">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 tracking-tight">Student Details</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field label="Register Number" value={data.registerNumber} />
                 <Field label="Name of the Student" value={data.name} />
                 <Field label="Year" value={data.year} />
@@ -348,12 +517,11 @@ export default function StudentProfile() {
             </div>
 
             {/* Parent & Address Card */}
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow relative">
-              <div className="absolute left-0 top-0 w-1.5 h-16 bg-[#276483]"></div>
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6">Family &amp; Address</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2 bg-[#f5f3f3] p-4 border border-[#e0c0b3]">
-                  <h3 className="font-bold uppercase text-sm mb-3">Father's Details</h3>
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 relative">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 tracking-tight">Family &amp; Address</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2 bg-gray-50 p-5 rounded-xl border border-gray-100">
+                  <h3 className="font-semibold text-sm mb-3 text-gray-500">Father's Details</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Field label="Name" value={data.fatherName} />
                     <Field label="Occupation" value={data.fatherOccupation} />
@@ -363,8 +531,8 @@ export default function StudentProfile() {
                   </div>
                 </div>
 
-                <div className="md:col-span-2 bg-[#f5f3f3] p-4 border border-[#e0c0b3]">
-                  <h3 className="font-bold uppercase text-sm mb-3">Mother's Details</h3>
+                <div className="md:col-span-2 bg-gray-50 p-5 rounded-xl border border-gray-100">
+                  <h3 className="font-semibold text-sm mb-3 text-gray-500">Mother's Details</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Field label="Name" value={data.motherName} />
                     <Field label="Occupation" value={data.motherOccupation} />
@@ -373,9 +541,9 @@ export default function StudentProfile() {
                     </div>
                   </div>
                 </div>
-                
+
                 <Field label="Native Location" value={data.nativeLocation} />
-                
+
                 <div className="md:col-span-2">
                   <Field label="Communication Address" value={data.communicationAddress} />
                 </div>
@@ -389,10 +557,10 @@ export default function StudentProfile() {
 
         {/* TAB 2: Education History */}
         {activeTab === 'Education History' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 border-b border-[#e0c0b3] pb-2">10th Grade (X)</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 border-b border-gray-100 pb-2">10th Grade (X)</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <Field label="Name of the School" value={data.school10th} />
                 </div>
@@ -402,9 +570,9 @@ export default function StudentProfile() {
               </div>
             </div>
 
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 border-b border-[#e0c0b3] pb-2">12th Grade (XII)</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 border-b border-gray-100 pb-2">12th Grade (XII)</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <Field label="Name of the School" value={data.school12th} />
                 </div>
@@ -414,9 +582,9 @@ export default function StudentProfile() {
               </div>
             </div>
 
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 border-b border-[#e0c0b3] pb-2">Diploma / Polytechnic</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 border-b border-gray-100 pb-2">Diploma / Polytechnic</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <Field label="Name of the Polytechnic" value={data.polytechnicName} />
                 </div>
@@ -425,8 +593,8 @@ export default function StudentProfile() {
               </div>
             </div>
 
-            <div className="bg-[#f0f6fa] border border-[#e0c0b3] p-8 block-shadow">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 border-b border-[#e0c0b3] pb-2">Other Details</h2>
+            <div className="bg-white border border-gray-100 p-6 shadow-sm rounded-2xl">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 border-b border-gray-100 pb-2">Other Details</h2>
               <Field label="Educational Gap (If any)" value={data.educationalGap} />
             </div>
           </div>
@@ -434,31 +602,31 @@ export default function StudentProfile() {
 
         {/* TAB 3: Academic Performance */}
         {activeTab === 'Academic Performance' && (
-          <div className="space-y-8">
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-8">Semester-wise SGPA</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="space-y-6 w-full">
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4">Semester-wise SGPA</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {Object.entries(data.sgpa).map(([sem, score], idx) => (
-                  <div key={sem} className="bg-[#f5f3f3] p-4 border border-[#e0c0b3] text-center">
-                    <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] block mb-2">Sem {idx + 1} SGPA</span>
-                    <span className="text-2xl font-sans font-bold text-[#1b1c1c]">{score}</span>
+                  <div key={sem} className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
+                    <span className="font-semibold text-xs text-gray-500 block mb-1">Sem {idx + 1} SGPA</span>
+                    <span className="text-2xl font-sans font-bold text-[#1B1C1C]">{score}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-[#ffffff] border border-[#f46b24] p-8 block-shadow text-center">
-                <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#f46b24] block mb-2">UG (CGPA)</span>
-                <span className="text-5xl font-sans font-bold text-[#1b1c1c]">{data.cgpa}</span>
+              <div className="bg-white border border-gray-100 p-6 shadow-sm rounded-2xl text-center">
+                <span className="font-semibold text-xs text-gray-500 block mb-1">UG (CGPA)</span>
+                <span className="text-3xl font-sans font-bold text-[#F46B24]">{data.cgpa}</span>
               </div>
-              <div className="bg-[#ffffff] border border-[#e0c0b3] p-8 block-shadow text-center">
-                <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] block mb-2">Current Arrears</span>
-                <span className="text-5xl font-sans font-bold text-[#1b1c1c]">{data.currentArrears}</span>
+              <div className="bg-white border border-gray-100 p-6 shadow-sm rounded-2xl text-center">
+                <span className="font-semibold text-xs text-gray-500 block mb-1">Current Arrears</span>
+                <span className="text-3xl font-sans font-bold text-[#1B1C1C]">{data.currentArrears}</span>
               </div>
-              <div className="bg-[#ffffff] border border-[#e0c0b3] p-8 block-shadow text-center">
-                <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] block mb-2">History of Arrears</span>
-                <span className="text-5xl font-sans font-bold text-[#1b1c1c]">{data.historyOfArrears}</span>
+              <div className="bg-white border border-gray-100 p-6 shadow-sm rounded-2xl text-center">
+                <span className="font-semibold text-xs text-gray-500 block mb-1">History of Arrears</span>
+                <span className="text-3xl font-sans font-bold text-[#1B1C1C]">{data.historyOfArrears}</span>
               </div>
             </div>
           </div>
@@ -466,116 +634,91 @@ export default function StudentProfile() {
 
         {/* TAB 4: Coding & Links */}
         {activeTab === 'Coding & Links' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow relative">
-              <div className="absolute left-0 top-0 w-1.5 h-16 bg-[#276483]"></div>
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 flex items-center gap-3">
-                <Terminal className="w-6 h-6 text-[#276483]" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 relative">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 flex items-center gap-3">
+                <Terminal className="w-6 h-6 text-[#1B1C1C]" />
                 Coding Profiles
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a href={formatUrl(data.githubId)} target="_blank" rel="noopener noreferrer" className="group bg-[#f5f3f3] border border-[#e0c0b3] p-4 flex flex-col gap-2 hover:border-[#f46b24] hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-2 text-[#8d7166] group-hover:text-[#f46b24] transition-colors">
-                    <Github className="w-5 h-5" />
-                    <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase font-bold">GitHub</span>
+                <a href={formatUrl(data.githubId)} target="_blank" rel="noopener noreferrer" className="group bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col gap-1 hover:border-[#F46B24] hover:shadow-sm transition-all">
+                  <div className="flex items-center gap-2 text-gray-500 group-hover:text-[#F46B24] transition-colors">
+                    <Github className="w-4 h-4" />
+                    <span className="text-xs font-semibold">GitHub</span>
                   </div>
-                  <span className="font-sans text-sm text-[#1b1c1c] font-medium break-all">{data.githubId}</span>
+                  <span className="font-sans text-sm text-[#1B1C1C] font-semibold break-all">{data.githubId}</span>
                 </a>
 
-                <a href={formatUrl(data.leetcodeId)} target="_blank" rel="noopener noreferrer" className="group bg-[#f5f3f3] border border-[#e0c0b3] p-4 flex flex-col gap-2 hover:border-[#f46b24] hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-2 text-[#8d7166] group-hover:text-[#f46b24] transition-colors">
-                    <Code2 className="w-5 h-5" />
-                    <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase font-bold">LeetCode</span>
+                <a href={formatUrl(data.leetcodeId)} target="_blank" rel="noopener noreferrer" className="group bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col gap-1 hover:border-[#F46B24] hover:shadow-sm transition-all">
+                  <div className="flex items-center gap-2 text-gray-500 group-hover:text-[#F46B24] transition-colors">
+                    <Code2 className="w-4 h-4" />
+                    <span className="text-xs font-semibold">LeetCode</span>
                   </div>
-                  <span className="font-sans text-sm text-[#1b1c1c] font-medium break-all">{data.leetcodeId}</span>
+                  <span className="font-sans text-sm text-[#1B1C1C] font-semibold break-all">{data.leetcodeId}</span>
                 </a>
 
-                <a href={formatUrl(data.hackerrankId)} target="_blank" rel="noopener noreferrer" className="group bg-[#f5f3f3] border border-[#e0c0b3] p-4 flex flex-col gap-2 hover:border-[#f46b24] hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-2 text-[#8d7166] group-hover:text-[#f46b24] transition-colors">
-                    <Terminal className="w-5 h-5" />
-                    <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase font-bold">HackerRank</span>
+                <a href={formatUrl(data.hackerrankId)} target="_blank" rel="noopener noreferrer" className="group bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col gap-1 hover:border-[#F46B24] hover:shadow-sm transition-all">
+                  <div className="flex items-center gap-2 text-gray-500 group-hover:text-[#F46B24] transition-colors">
+                    <Terminal className="w-4 h-4" />
+                    <span className="text-xs font-semibold">HackerRank</span>
                   </div>
-                  <span className="font-sans text-sm text-[#1b1c1c] font-medium break-all">{data.hackerrankId}</span>
+                  <span className="font-sans text-sm text-[#1B1C1C] font-semibold break-all">{data.hackerrankId}</span>
                 </a>
 
-                <a href={formatUrl(data.hackerearthId)} target="_blank" rel="noopener noreferrer" className="group bg-[#f5f3f3] border border-[#e0c0b3] p-4 flex flex-col gap-2 hover:border-[#f46b24] hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-2 text-[#8d7166] group-hover:text-[#f46b24] transition-colors">
-                    <Code2 className="w-5 h-5" />
-                    <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase font-bold">HackerEarth</span>
+                <a href={formatUrl(data.hackerearthId)} target="_blank" rel="noopener noreferrer" className="group bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col gap-1 hover:border-[#F46B24] hover:shadow-sm transition-all">
+                  <div className="flex items-center gap-2 text-gray-500 group-hover:text-[#F46B24] transition-colors">
+                    <Code2 className="w-4 h-4" />
+                    <span className="text-xs font-semibold">HackerEarth</span>
                   </div>
-                  <span className="font-sans text-sm text-[#1b1c1c] font-medium break-all">{data.hackerearthId}</span>
+                  <span className="font-sans text-sm text-[#1B1C1C] font-semibold break-all">{data.hackerearthId}</span>
                 </a>
               </div>
             </div>
 
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow relative">
-              <div className="absolute left-0 top-0 w-1.5 h-16 bg-[#f46b24]"></div>
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 flex items-center gap-3">
-                <Globe className="w-6 h-6 text-[#f46b24]" />
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 relative">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 flex items-center gap-3">
+                <LinkIcon className="w-6 h-6 text-[#1B1C1C]" />
                 Professional Links
               </h2>
-              <div className="flex flex-col gap-4">
-                <a href={formatUrl(data.linkedinId)} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between bg-[#f5f3f3] border border-[#e0c0b3] p-4 hover:border-[#276483] hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-[#276483] text-white p-2 rounded-sm">
-                      <Linkedin className="w-5 h-5" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] font-bold">LinkedIn</span>
-                      <span className="font-sans text-sm text-[#1b1c1c] font-medium break-all">{data.linkedinId}</span>
-                    </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <a href={formatUrl(data.linkedInId)} target="_blank" rel="noopener noreferrer" className="group bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col gap-1 hover:border-[#F46B24] hover:shadow-sm transition-all">
+                  <div className="flex items-center gap-2 text-gray-500 group-hover:text-[#F46B24] transition-colors">
+                    <Linkedin className="w-4 h-4" />
+                    <span className="text-xs font-semibold">LinkedIn</span>
                   </div>
-                  <ExternalLink className="w-5 h-5 text-[#8d7166] group-hover:text-[#276483] transition-colors" />
+                  <span className="font-sans text-sm text-[#1B1C1C] font-semibold break-all">{data.linkedInId}</span>
                 </a>
 
-                <a href={formatUrl(data.portfolioLink)} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between bg-[#f5f3f3] border border-[#e0c0b3] p-4 hover:border-[#f46b24] hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-[#f46b24] text-white p-2 rounded-sm">
-                      <Globe className="w-5 h-5" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] font-bold">Portfolio Website</span>
-                      <span className="font-sans text-sm text-[#1b1c1c] font-medium break-all">{data.portfolioLink}</span>
-                    </div>
+                <a href={formatUrl(data.portfolio)} target="_blank" rel="noopener noreferrer" className="group bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col gap-1 hover:border-[#F46B24] hover:shadow-sm transition-all">
+                  <div className="flex items-center gap-2 text-gray-500 group-hover:text-[#F46B24] transition-colors">
+                    <Globe className="w-4 h-4" />
+                    <span className="text-xs font-semibold">Portfolio</span>
                   </div>
-                  <ExternalLink className="w-5 h-5 text-[#8d7166] group-hover:text-[#f46b24] transition-colors" />
-                </a>
-
-                <a href={formatUrl(data.resumeLink)} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between bg-[#f5f3f3] border border-[#e0c0b3] p-4 hover:border-[#1b1c1c] hover:shadow-sm transition-all">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-[#1b1c1c] text-white p-2 rounded-sm">
-                      <FileText className="w-5 h-5" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] font-bold">Resume / CV</span>
-                      <span className="font-sans text-sm text-[#1b1c1c] font-medium break-all line-clamp-1">{data.resumeLink}</span>
-                    </div>
-                  </div>
-                  <ExternalLink className="w-5 h-5 text-[#8d7166] group-hover:text-[#1b1c1c] transition-colors" />
+                  <span className="font-sans text-sm text-[#1B1C1C] font-semibold break-all">{data.portfolio}</span>
                 </a>
               </div>
             </div>
 
-            <div className="lg:col-span-2 bg-[#f0f6fa] border border-[#e0c0b3] p-8 block-shadow relative">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 border-b border-[#e0c0b3] pb-2">
+            <div className="lg:col-span-2 bg-white border border-gray-100 p-6 shadow-sm rounded-2xl relative">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 border-b border-gray-100 pb-2">
                 Live Stats
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
-                <div className="bg-white border border-[#e0c0b3] p-6 text-center shadow-sm">
-                  <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] block mb-2">GitHub Repos</span>
-                  <span className="text-4xl font-sans font-bold text-[#1b1c1c]">{stats.githubRepos}</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-center shadow-sm">
+                  <span className="font-semibold text-xs text-gray-500 block mb-1">GitHub Repos</span>
+                  <span className="text-3xl font-sans font-bold text-[#1B1C1C]">{stats.githubRepos}</span>
                 </div>
-                <div className="bg-white border border-[#e0c0b3] p-6 text-center shadow-sm">
-                  <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] block mb-2">LeetCode Solved</span>
-                  <span className="text-4xl font-sans font-bold text-[#f46b24]">{stats.leetcodeSolved}</span>
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-center shadow-sm">
+                  <span className="font-semibold text-xs text-gray-500 block mb-1">LeetCode Solved</span>
+                  <span className="text-3xl font-sans font-bold text-[#F46B24]">{stats.leetcodeSolved}</span>
                 </div>
-                <div className="bg-white border border-[#e0c0b3] p-6 text-center shadow-sm">
-                  <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] block mb-2">HackerRank Badges</span>
-                  <span className="text-4xl font-sans font-bold text-[#276483]">{stats.hackerrankBadges}</span>
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-center shadow-sm">
+                  <span className="font-semibold text-xs text-gray-500 block mb-1">HackerRank Badges</span>
+                  <span className="text-3xl font-sans font-bold text-[#1B1C1C]">{stats.hackerrankBadges}</span>
                 </div>
-                <div className="bg-white border border-[#e0c0b3] p-6 text-center shadow-sm">
-                  <span className="font-['JetBrains_Mono',_monospace] text-xs uppercase text-[#8d7166] block mb-2">HackerEarth Count</span>
-                  <span className="text-4xl font-sans font-bold text-[#f46b24]">{stats.hackerearthCount}</span>
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-center shadow-sm">
+                  <span className="font-semibold text-xs text-gray-500 block mb-1">HackerEarth Count</span>
+                  <span className="text-3xl font-sans font-bold text-[#F46B24]">{stats.hackerearthCount}</span>
                 </div>
               </div>
             </div>
@@ -584,96 +727,94 @@ export default function StudentProfile() {
 
         {/* TAB 5: Research Papers */}
         {activeTab === 'Research Papers' && (
-          <div className="space-y-8">
-            
+          <div className="space-y-6 w-full">
+
             {/* Authored Papers (Published) */}
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow relative">
-              <div className="absolute left-0 top-0 w-1.5 h-16 bg-[#f46b24]"></div>
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 flex items-center gap-3">
-                <FileText className="w-6 h-6 text-[#f46b24]" />
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 relative">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 flex items-center gap-3">
+                <FileText className="w-6 h-6 text-[#1B1C1C]" />
                 My Publications
               </h2>
               {data.authoredPapers?.filter((p: any) => p.status === 'published' || p.status === 'unpublished').length > 0 ? (
                 <div className="grid gap-4">
                   {data.authoredPapers.filter((p: any) => p.status === 'published' || p.status === 'unpublished').map((paper: any) => (
-                    <Link key={paper.id} to={`/research/${paper.id}`} className="block border border-[#e0c0b3] p-4 bg-[#f5f3f3] hover:border-[#f46b24] transition-colors relative">
+                    <Link key={paper.id} to={`/research/${paper.id}`} className="block border border-gray-100 rounded-xl p-4 bg-gray-50 hover:border-[#F46B24] transition-colors relative">
                       {paper.status === 'unpublished' && (
-                        <span className="absolute top-4 right-4 bg-gray-200 text-gray-700 text-[9px] font-bold px-2 py-1 uppercase tracking-wider">
+                        <span className="absolute top-4 right-4 bg-gray-200 text-gray-700 text-[10px] font-semibold px-2 py-0.5 rounded">
                           Internal
                         </span>
                       )}
-                      <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#f46b24] mb-1">{paper.domain}</div>
-                      <h3 className="font-bold text-[#1b1c1c] text-lg leading-snug mb-1">{paper.title}</h3>
-                      <p className="text-sm text-[#8d7166]">{paper.authors.map((a: any) => a.name).join(', ')}</p>
+                      <div className="text-xs font-semibold text-[#F46B24] mb-1">{paper.domain}</div>
+                      <h3 className="font-bold text-[#1B1C1C] text-base leading-snug mb-1">{paper.title}</h3>
+                      <p className="text-xs text-gray-500 font-medium">{paper.authors.map((a: any) => a.name).join(', ')}</p>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-[#8d7166]">No published publications found for this profile.</p>
+                <p className="text-sm font-medium text-gray-500">No published publications found for this profile.</p>
               )}
             </div>
 
             {/* Submission Requested (Under Review) */}
-            <div className="bg-white border border-[#e0c0b3] p-8 block-shadow relative">
-              <div className="absolute left-0 top-0 w-1.5 h-16 bg-[#276483]"></div>
-              <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 flex items-center gap-3">
-                <FileText className="w-6 h-6 text-[#276483]" />
+            <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 relative">
+              <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 flex items-center gap-3">
+                <FileText className="w-6 h-6 text-[#1B1C1C]" />
                 Submission Requested
               </h2>
               {data.authoredPapers?.filter((p: any) => p.status === 'under_review').length > 0 ? (
                 <div className="grid gap-4">
                   {data.authoredPapers.filter((p: any) => p.status === 'under_review').map((paper: any) => (
-                    <Link key={paper.id} to={`/research/${paper.id}`} className="block border border-[#e0c0b3] p-4 bg-[#f9f8f6] hover:border-[#276483] transition-colors relative">
-                      <span className="absolute top-4 right-4 bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
+                    <Link key={paper.id} to={`/research/${paper.id}`} className="block border border-gray-100 rounded-xl p-4 bg-orange-50 hover:border-[#F46B24] transition-colors relative">
+                      <span className="absolute top-4 right-4 bg-yellow-100 text-yellow-800 text-[10px] font-semibold px-2 py-0.5 rounded">
                         Under Review
                       </span>
-                      <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#276483] mb-1">{paper.domain}</div>
-                      <h3 className="font-bold text-[#1b1c1c] text-lg leading-snug mb-1 pr-24">{paper.title}</h3>
-                      <p className="text-sm text-[#8d7166]">{paper.authors.map((a: any) => a.name).join(', ')}</p>
+                      <div className="text-xs font-semibold text-gray-700 mb-1">{paper.domain}</div>
+                      <h3 className="font-bold text-[#1B1C1C] text-base leading-snug mb-1 pr-24">{paper.title}</h3>
+                      <p className="text-xs text-gray-500 font-medium">{paper.authors.map((a: any) => a.name).join(', ')}</p>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-[#8d7166]">No pending submissions.</p>
+                <p className="text-sm font-medium text-gray-500">No pending submissions.</p>
               )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Saved Papers */}
-              <div className="bg-white border border-[#e0c0b3] p-8 block-shadow relative">
-                <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 border-b border-[#e0c0b3] pb-2">
+              <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 relative">
+                <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 border-b border-gray-100 pb-2">
                   Saved Papers
                 </h2>
                 {data.savedPapers?.length > 0 ? (
                   <div className="grid gap-3">
                     {data.savedPapers.map((paper: any) => (
-                      <Link key={paper.id} to={`/research/${paper.id}`} className="block border border-[#e0c0b3] p-3 bg-[#f5f3f3] hover:border-[#f46b24] transition-colors">
-                        <h3 className="font-bold text-[#1b1c1c] text-sm leading-snug mb-1 line-clamp-2">{paper.title}</h3>
-                        <p className="text-xs text-[#8d7166] line-clamp-1">{paper.authors.map(a => a.name).join(', ')}</p>
+                      <Link key={paper.id} to={`/research/${paper.id}`} className="block border border-gray-100 rounded-lg p-3 bg-gray-50 hover:border-[#F46B24] transition-colors">
+                        <h3 className="font-bold text-[#1B1C1C] text-sm leading-snug mb-1 line-clamp-2">{paper.title}</h3>
+                        <p className="text-xs text-gray-500 font-medium line-clamp-1">{paper.authors.map((a: any) => a.name).join(', ')}</p>
                       </Link>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-[#8d7166]">No saved papers.</p>
+                  <p className="text-sm font-medium text-gray-500">No saved papers.</p>
                 )}
               </div>
 
               {/* Cited Papers */}
-              <div className="bg-white border border-[#e0c0b3] p-8 block-shadow relative">
-                <h2 className="font-sans text-xl font-bold uppercase tracking-widest text-[#1b1c1c] mb-6 border-b border-[#e0c0b3] pb-2">
+              <div className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 relative">
+                <h2 className="font-display-hero text-2xl font-bold text-[#1B1C1C] mb-4 border-b border-gray-100 pb-2">
                   Cited Papers
                 </h2>
                 {data.citedPapers?.length > 0 ? (
                   <div className="grid gap-3">
                     {data.citedPapers.map((paper: any) => (
-                      <Link key={paper.id} to={`/research/${paper.id}`} className="block border border-[#e0c0b3] p-3 bg-[#f5f3f3] hover:border-[#f46b24] transition-colors">
-                        <h3 className="font-bold text-[#1b1c1c] text-sm leading-snug mb-1 line-clamp-2">{paper.title}</h3>
-                        <p className="text-xs text-[#8d7166] line-clamp-1">{paper.authors.map(a => a.name).join(', ')}</p>
+                      <Link key={paper.id} to={`/research/${paper.id}`} className="block border border-gray-100 rounded-lg p-3 bg-gray-50 hover:border-[#F46B24] transition-colors">
+                        <h3 className="font-bold text-[#1B1C1C] text-sm leading-snug mb-1 line-clamp-2">{paper.title}</h3>
+                        <p className="text-xs text-gray-500 font-medium line-clamp-1">{paper.authors.map((a: any) => a.name).join(', ')}</p>
                       </Link>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-[#8d7166]">No cited papers.</p>
+                  <p className="text-sm font-medium text-gray-500">No cited papers.</p>
                 )}
               </div>
             </div>
@@ -685,11 +826,11 @@ export default function StudentProfile() {
       {/* Update Request Modal */}
       {isUpdateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#fbf9f8] w-full max-w-lg block-shadow border border-[#e0c0b3] relative overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="bg-white w-full max-w-lg shadow-sm rounded-2xl border border-gray-100 relative overflow-hidden animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
-            <div className="bg-[#1b1c1c] text-white px-6 py-4 flex items-center justify-between">
-              <h3 className="font-sans font-bold tracking-widest uppercase text-sm">Request Profile Update</h3>
-              <button 
+            <div className="bg-[#1B1C1C] text-white px-6 py-4 flex items-center justify-between">
+              <h3 className="font-sans font-semibold tracking-wide text-sm">Request Profile Update</h3>
+              <button
                 onClick={() => !isSendingUpdate && setIsUpdateModalOpen(false)}
                 className="text-gray-400 hover:text-white transition-colors"
                 disabled={isSendingUpdate}
@@ -697,40 +838,40 @@ export default function StudentProfile() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             {/* Modal Body */}
-            <div className="p-6 md:p-8">
-              <p className="font-['JetBrains_Mono',_monospace] text-sm text-[#594238] mb-6">
+            <div className="p-6">
+              <p className="font-mono text-sm text-gray-500 mb-6">
                 Please describe the details you want to update in your profile. An email will be sent to the association staff.
               </p>
-              
+
               <form onSubmit={handleSendUpdate}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold tracking-widest text-[#1b1c1c] uppercase mb-2">Details to Update</label>
+                    <label className="block text-xs font-semibold text-gray-600 mb-2">Details to Update</label>
                     <textarea
                       value={updateMessage}
                       onChange={(e) => setUpdateMessage(e.target.value)}
                       required
                       placeholder="E.g., I want to update my mobile number to 9876543210..."
-                      className="w-full px-4 py-3 bg-white border border-[#e0c0b3] focus:border-[#f46b24] focus:ring-1 focus:ring-[#f46b24] outline-none transition-all resize-none min-h-[120px] font-sans text-sm text-[#333]"
+                      className="w-full px-4 py-3 bg-white border border-outline-variant focus:border-primary-container focus:ring-1 focus:ring-[#f46b24] outline-none transition-all resize-none min-h-[120px] font-sans text-sm text-[#333]"
                       disabled={isSendingUpdate}
                     />
                   </div>
-                  
+
                   <div className="flex justify-end gap-4 pt-4">
                     <button
                       type="button"
                       onClick={() => setIsUpdateModalOpen(false)}
                       disabled={isSendingUpdate}
-                      className="px-6 py-3 border border-[#e0c0b3] text-[#594238] font-sans text-xs font-bold uppercase tracking-widest hover:bg-[#e0c0b3]/20 transition-colors"
+                      className="px-6 py-2.5 border border-gray-200 text-gray-600 rounded font-sans text-xs font-semibold hover:bg-gray-50 transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={isSendingUpdate || !updateMessage.trim()}
-                      className="bg-[#f46b24] text-white px-8 py-3 font-sans text-xs font-bold uppercase tracking-widest block-shadow hover:bg-[#d55a1e] transition-colors disabled:opacity-70 flex items-center gap-2"
+                      className="bg-[#F46B24] text-white px-6 py-2.5 rounded font-sans text-xs font-semibold shadow-sm hover:bg-[#d55a1e] transition-colors disabled:opacity-70 flex items-center gap-2"
                     >
                       {isSendingUpdate ? (
                         <>

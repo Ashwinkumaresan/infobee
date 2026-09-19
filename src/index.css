@@ -8,6 +8,19 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-poppins: "Poppins", sans-serif;
 
+  /* ─── Brand Registration Palette ─── */
+  --color-brand-navy: #101828;
+  --color-brand-grayMuted: #667085;
+  --color-brand-border: #E5E7EB;
+  --color-brand-bgWarm: #FAFAF8;
+  --color-brand-card: #FFFFFF;
+  --color-brand-orange: #F46B24;
+  --color-brand-orangeSubtle: #FFF5EE;
+  --color-brand-green: #16845B;
+  --color-brand-greenLight: #E6F4EA;
+  --color-brand-red: #D64545;
+  --color-brand-redLight: #FEF2F2;
+
   /* ─── 60-30-10 Palette ─── */
   /* 60% — Base surfaces */
   --color-base: #FFFFFF;
@@ -73,4 +86,181 @@ body {
 }
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+@theme {
+  --color-surface-container-high: #dfe8ff;
+  --color-inverse-primary: #ffb596;
+  --color-on-secondary-container: #5c6477;
+  --color-on-tertiary-container: #322c26;
+  --color-tertiary-container: #9c938b;
+  --color-on-error-container: #93000a;
+  --color-on-secondary-fixed-variant: #3f4759;
+  --color-background: #f9f9ff;
+  --color-surface-dim: #d0daf2;
+  --color-outline-variant: #e0c0b3;
+  --color-on-secondary-fixed: #141b2c;
+  --color-primary-fixed: #ffdbcd;
+  --color-on-tertiary-fixed: #201b15;
+  --color-on-primary-fixed: #360f00;
+  --color-on-tertiary: #ffffff;
+  --color-surface-variant: #d9e3fb;
+  --color-secondary-fixed-dim: #bfc6dc;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #f46b24;
+  --color-error: #ba1a1a;
+  --color-secondary-fixed: #dbe2f9;
+  --color-outline: #8d7166;
+  --color-tertiary-fixed: #ece0d8;
+  --color-primary: #a33e00;
+  --color-on-tertiary-fixed-variant: #4c463f;
+  --color-surface-bright: #f9f9ff;
+  --color-on-surface: #111c2d;
+  --color-surface-container-lowest: #ffffff;
+  --color-secondary: #565e71;
+  --color-on-error: #ffffff;
+  --color-surface: #f9f9ff;
+  --color-on-surface-variant: #594238;
+  --color-tertiary-fixed-dim: #cfc5bc;
+  --color-on-primary-fixed-variant: #7d2d00;
+  --color-surface-container-highest: #d9e3fb;
+  --color-surface-container: #e8eeff;
+  --color-on-background: #111c2d;
+  --color-on-secondary: #ffffff;
+  --color-on-primary-container: #531c00;
+  --color-inverse-on-surface: #ecf0ff;
+  --color-primary-fixed-dim: #ffb596;
+  --color-surface-container-low: #f0f3ff;
+  --color-surface-tint: #a33e00;
+  --color-tertiary: #655d56;
+  --color-secondary-container: #dbe2f9;
+  --color-error-container: #ffdad6;
+  --color-inverse-surface: #273143;
+
+  --spacing-space-md: 1rem;
+  --spacing-margin: 4rem;
+  --spacing-gutter-sm: 1rem;
+  --spacing-space-3xl: 6rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-xs: 0.25rem;
+  --spacing-gutter: 1.5rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-space-2xl: 4rem;
+  --spacing-margin-tablet: 2.5rem;
+  --spacing-margin-mobile: 1.25rem;
+}
+
+@utility font-display-hero { font-family: "Plus Jakarta Sans"; }
+@utility font-body-md { font-family: "Plus Jakarta Sans"; }
+@utility font-headline-lg { font-family: "Plus Jakarta Sans"; }
+@utility font-label-sm { font-family: "Manrope"; }
+@utility font-label-md { font-family: "Manrope"; }
+@utility font-headline-md-mobile { font-family: "Plus Jakarta Sans"; }
+@utility font-headline-md { font-family: "Plus Jakarta Sans"; }
+@utility font-headline-sm { font-family: "Plus Jakarta Sans"; }
+@utility font-headline-lg-mobile { font-family: "Plus Jakarta Sans"; }
+@utility font-label-eyebrow { font-family: "Manrope"; }
+@utility font-display-hero-mobile { font-family: "Plus Jakarta Sans"; }
+@utility font-body-sm { font-family: "Plus Jakarta Sans"; }
+@utility font-body-lead { font-family: "Plus Jakarta Sans"; }
+
+@utility text-display-hero {
+  font-size: 72px;
+  line-height: 78px;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+}
+@utility text-body-md {
+  font-size: 15px;
+  line-height: 24px;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+}
+@utility text-headline-lg {
+  font-size: 48px;
+  line-height: 54px;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+@utility text-label-sm {
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+@utility text-label-md {
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+}
+@utility text-headline-md-mobile {
+  font-size: 26px;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+@utility text-headline-md {
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+@utility text-headline-sm {
+  font-size: 22px;
+  line-height: 28px;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+@utility text-headline-lg-mobile {
+  font-size: 32px;
+  line-height: 38px;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+@utility text-label-eyebrow {
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+@utility text-display-hero-mobile {
+  font-size: 44px;
+  line-height: 48px;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+@utility text-body-sm {
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: 0em;
+  font-weight: 400;
+}
+@utility text-body-lead {
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+
+/* Registration Specific Styles */
+.academic-grid-bg {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(16, 24, 40, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 24, 40, 0.035) 1px, transparent 1px);
+}
+.wheel-wrapper {
+  position: relative;
+}
+.wheel-disc {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transition: transform 4.2s cubic-bezier(0.12, 0.95, 0.22, 1);
+  box-shadow: 0 16px 36px -8px rgba(16, 24, 40, 0.07), inset 0 0 0 1px #E5E7EB;
+}
+.step-view {
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }

@@ -131,7 +131,7 @@ export default function Detail() {
       const response = await fetch(`${API_URL}/token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: loginEmail.split('@')[0], password: loginPassword }),
+        body: JSON.stringify({ username: loginEmail.split('@')[0].toUpperCase(), password: loginPassword }),
       });
       if (response.ok) {
         const data = await response.json();

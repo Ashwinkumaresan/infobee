@@ -67,11 +67,11 @@ export default function StudentSignup() {
             clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 10% 50%);
         }
 
-        .block-shadow {
+        .shadow-sm rounded-xl {
             box-shadow: 4px 4px 0px 0px #1b1c1c;
         }
 
-        .block-shadow:active {
+        .shadow-sm rounded-xl:active {
             box-shadow: 0px 0px 0px 0px #1b1c1c;
             transform: translate(2px, 2px);
         }
@@ -86,7 +86,7 @@ export default function StudentSignup() {
       <main className="w-full max-w-[440px] flex flex-col items-center relative z-10">
 
         {/* Main Card */}
-        <div className="faceted-card w-full p-8 md:p-10 transition-stage" id="signup-card">
+        <div className="w-full bg-surface-container-lowest shadow-xl rounded-2xl p-8 md:p-10 transition-stage" id="signup-card">
           
           {/* Step Indicator */}
           <div className="flex gap-1 mb-10">
@@ -99,20 +99,20 @@ export default function StudentSignup() {
           {phase === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <div>
-                <h2 className="text-2xl text-[#1b1c1c] font-bold leading-tight mb-2">Create your Infobee account</h2>
-                <p className="text-[#594238]">Enter your college email to get started</p>
+                <h2 className="font-display text-headline-md font-bold text-on-surface leading-tight mb-2">Create your Infobee account</h2>
+                <p className="font-body-md text-secondary">Enter your college email to get started</p>
               </div>
               
               <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); goToPhase(2); }}>
                 <div className="flex flex-col gap-1.5">
                   <label 
-                    className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'email' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
+                    className={`font-label-sm text-label-sm uppercase tracking-wider font-bold transition-colors ${focusedInput === 'email' ? 'text-primary-container' : 'text-secondary'}`} 
                     htmlFor="email"
                   >
                     College Email
                   </label>
                   <input 
-                    className="w-full bg-[#ffffff] border border-[#8d7166] px-4 py-3 rounded-none text-[#1b1c1c] placeholder:text-[#dbd9d9] focus:outline-none focus:border-[#f46b24] transition-colors" 
+                    className="w-full bg-surface-container-low border border-transparent px-4 py-3 rounded-lg text-on-surface font-body-md placeholder:text-outline-variant focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest transition-colors" 
                     id="email" 
                     placeholder="name@college.edu" 
                     type="email"
@@ -122,16 +122,16 @@ export default function StudentSignup() {
                 </div>
                 <button 
                   type="submit"
-                  className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-widest block-shadow transition-all hover:bg-[#a33e00]" 
+                  className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-wider shadow-sm transition-all hover:bg-[#a33e00]" 
                 >
                   Send OTP
                 </button>
               </form>
               
               <div className="pt-4 text-center">
-                <p className="text-[#594238]">
+                <p className="font-body-md text-secondary">
                   Already have an account?{' '}
-                  <Link to="/student/signin" className="text-[#f46b24] font-bold hover:underline decoration-2 underline-offset-4">
+                  <Link to="/student/signin" className="text-primary-container font-bold hover:underline decoration-2 underline-offset-4">
                     Sign In
                   </Link>
                 </p>
@@ -143,20 +143,20 @@ export default function StudentSignup() {
           {phase === 2 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <div>
-                <h2 className="text-2xl text-[#1b1c1c] font-bold leading-tight mb-2">Verify your email</h2>
-                <p className="text-[#594238]">We've sent a code to your email address.</p>
+                <h2 className="font-display text-headline-md font-bold text-on-surface leading-tight mb-2">Verify your email</h2>
+                <p className="font-body-md text-secondary">We've sent a code to your email address.</p>
               </div>
               
               <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); goToPhase(3); }}>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] uppercase tracking-widest text-[#594238] font-bold text-center">
+                  <label className="text-[12px] uppercase tracking-widest text-on-surface-variant font-bold text-center">
                     Enter 6-digit Code
                   </label>
                   <div className="flex justify-between gap-2">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
                       <input 
                         key={i}
-                        className="w-10 h-14 sm:w-12 sm:h-14 text-center text-xl font-['JetBrains_Mono',_monospace] border border-[#8d7166] bg-[#ffffff] rounded-none focus:outline-none focus:border-[#f46b24] transition-colors" 
+                        className="w-10 h-14 sm:w-12 sm:h-14 text-center text-xl font-mono border border-outline bg-[#ffffff] rounded-none focus:outline-none focus:border-primary-container transition-colors" 
                         maxLength={1} 
                         type="text"
                       />
@@ -165,13 +165,13 @@ export default function StudentSignup() {
                 </div>
                 <button 
                   type="submit"
-                  className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-widest block-shadow transition-all hover:bg-[#a33e00] mt-4" 
+                  className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-wider shadow-sm transition-all hover:bg-[#a33e00] mt-4" 
                 >
                   Verify Code
                 </button>
                 <button 
                   type="button"
-                  className="w-full text-[#594238] text-sm font-bold uppercase tracking-wider py-2 hover:text-[#1b1c1c] transition-colors" 
+                  className="w-full text-on-surface-variant text-sm font-bold uppercase tracking-wider py-2 hover:text-on-surface transition-colors" 
                   onClick={() => goToPhase(1)}
                 >
                   Back to email
@@ -184,20 +184,20 @@ export default function StudentSignup() {
           {phase === 3 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <div>
-                <h2 className="text-2xl text-[#1b1c1c] font-bold leading-tight mb-2">Almost there</h2>
-                <p className="text-[#594238]">Complete your profile to join the hive.</p>
+                <h2 className="font-display text-headline-md font-bold text-on-surface leading-tight mb-2">Almost there</h2>
+                <p className="font-body-md text-secondary">Complete your profile to join the hive.</p>
               </div>
               
               <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); navigate('/student/profile', { replace: true }); }}>
                 <div className="flex flex-col gap-1.5">
                   <label 
-                    className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'fullname' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
+                    className={`font-label-sm text-label-sm uppercase tracking-wider font-bold transition-colors ${focusedInput === 'fullname' ? 'text-primary-container' : 'text-secondary'}`} 
                     htmlFor="fullname"
                   >
                     Full Name
                   </label>
                   <input 
-                    className="w-full bg-[#ffffff] border border-[#8d7166] px-4 py-3 rounded-none text-[#1b1c1c] focus:outline-none focus:border-[#f46b24] transition-colors" 
+                    className="w-full bg-surface-container-low border border-transparent px-4 py-3 rounded-lg text-on-surface font-body-md focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest transition-colors" 
                     id="fullname" 
                     placeholder="John Doe" 
                     type="text"
@@ -208,13 +208,13 @@ export default function StudentSignup() {
                 
                 <div className="flex flex-col gap-1.5">
                   <label 
-                    className={`text-[12px] uppercase tracking-widest font-bold transition-colors ${focusedInput === 'password' ? 'text-[#a33e00]' : 'text-[#594238]'}`} 
+                    className={`font-label-sm text-label-sm uppercase tracking-wider font-bold transition-colors ${focusedInput === 'password' ? 'text-primary-container' : 'text-secondary'}`} 
                     htmlFor="password"
                   >
                     Create Password
                   </label>
                   <input 
-                    className="w-full bg-[#ffffff] border border-[#8d7166] px-4 py-3 rounded-none text-[#1b1c1c] focus:outline-none focus:border-[#f46b24] transition-colors" 
+                    className="w-full bg-surface-container-low border border-transparent px-4 py-3 rounded-lg text-on-surface font-body-md focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest transition-colors" 
                     id="password" 
                     placeholder="••••••••" 
                     type="password"
@@ -225,18 +225,18 @@ export default function StudentSignup() {
                 
                 <div className="flex items-start gap-3 pt-2">
                   <input 
-                    className="mt-1 w-4 h-4 rounded-none border-[#8d7166] text-[#f46b24] focus:ring-[#f46b24]" 
+                    className="mt-1 w-4 h-4 rounded-none border-outline text-primary-container focus:ring-[#f46b24]" 
                     id="terms" 
                     type="checkbox"
                   />
-                  <label className="text-sm text-[#594238] leading-snug cursor-pointer" htmlFor="terms">
-                    I agree to the <span className="text-[#f46b24] font-bold hover:underline">Terms of Service</span> and <span className="text-[#f46b24] font-bold hover:underline">Privacy Policy</span>.
+                  <label className="text-sm text-on-surface-variant leading-snug cursor-pointer" htmlFor="terms">
+                    I agree to the <span className="text-primary-container font-bold hover:underline">Terms of Service</span> and <span className="text-primary-container font-bold hover:underline">Privacy Policy</span>.
                   </label>
                 </div>
                 
                 <button 
                   type="submit"
-                  className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-widest block-shadow transition-all hover:bg-[#a33e00] mt-4"
+                  className="w-full bg-[#f46b24] text-white py-4 font-bold uppercase tracking-wider shadow-sm transition-all hover:bg-[#a33e00] mt-4"
                 >
                   Complete Setup
                 </button>

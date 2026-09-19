@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Award, ChevronRight, Sparkles, LogIn, ChevronDown } from 'lucide-react';
+import { API_URL } from '../api';
 
 interface HeaderProps {
   onJoinClick: () => void;
@@ -51,7 +52,7 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
   }, []);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/hackathon/available-scenarios/')
+    fetch(`${API_URL}/hackathon/available-scenarios/`)
       .then(res => res.json())
       .then(data => {
         if (data.is_registration_open === false) {

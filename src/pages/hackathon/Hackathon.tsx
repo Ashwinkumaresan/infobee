@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Code, Terminal, Database, Users, Shield, Zap, Target, HelpCircle, ChevronRight, X, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Header from '../../components/Header';
+import { API_URL } from '../../api';
 
 export default function Hackathon() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
@@ -7,7 +11,7 @@ export default function Hackathon() {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/hackathon/available-scenarios/')
+    fetch(`${API_URL}/hackathon/available-scenarios/`)
       .then(res => res.json())
       .then(data => {
         if (data.is_registration_open === false) {
@@ -28,7 +32,7 @@ export default function Hackathon() {
 
   return (
 
-    <div className="flex flex-col w-full text-on-surface mt-5in">
+    <div className="flex flex-col w-full text-on-surface">
       {/* 1. HERO SECTION */}
       <section className="relative min-h-[100vh] flex items-center justify-center pt-24 pb-16 overflow-hidden bg-white">
         {/* Dynamic Parallel Slanted (Skewed) Vertical Rectangle Background Grid */}
@@ -44,7 +48,7 @@ export default function Hackathon() {
             >
               <div className="w-full h-full" style={{ transform: 'skewX(-14deg) scale(1.3)' }}>
                 <img
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"
+                  src="/2F0A9821.JPG"
                   alt="Tech Collaboration"
                   className="w-full h-full object-cover object-center opacity-30 mix-blend-multiply"
                   referrerPolicy="no-referrer"
@@ -64,7 +68,7 @@ export default function Hackathon() {
             >
               <div className="w-full h-full" style={{ transform: 'skewX(-14deg) scale(1.3)' }}>
                 <img
-                  src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80"
+                  src="/2F0A9821.JPG"
                   alt="Hackathon Infobee Stage"
                   className="w-full h-full object-cover object-center opacity-35 mix-blend-multiply"
                   referrerPolicy="no-referrer"
@@ -83,7 +87,7 @@ export default function Hackathon() {
             >
               <div className="w-full h-full" style={{ transform: 'skewX(-14deg) scale(1.3)' }}>
                 <img
-                  src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80"
+                  src="/2F0A9821.JPG"
                   alt="Ideas & Planning"
                   className="w-full h-full object-cover object-center opacity-30 mix-blend-multiply"
                   referrerPolicy="no-referrer"
@@ -102,7 +106,7 @@ export default function Hackathon() {
             >
               <div className="w-full h-full" style={{ transform: 'skewX(-14deg) scale(1.3)' }}>
                 <img
-                  src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80"
+                  src="/2F0A9821.JPG"
                   alt="Student Prototyping"
                   className="w-full h-full object-cover object-center opacity-25 mix-blend-multiply"
                   referrerPolicy="no-referrer"
@@ -120,7 +124,7 @@ export default function Hackathon() {
 
         <div className="relative z-30 max-w-[1280px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-gutter text-left md:text-center flex flex-col items-start md:items-center w-full">
           <h1 className="font-display-hero text-display-hero-mobile sm:text-[4rem] md:text-display-md font-bold tracking-tight text-gray-900 leading-[1.05] mb-space-md break-words">
-            Build.<br />Break.<br /><span className="text-brand-orange">Reimagine.</span>
+            Nexora<span className="text-brand-orange">'26</span>
           </h1>
           <div className="space-y-2 mb-space-xl max-w-2xl mx-0 md:mx-auto">
             <p className="font-headline-sm text-headline-sm font-semibold text-gray-900">
@@ -132,7 +136,7 @@ export default function Hackathon() {
           </div>
           
           {/* Horizontal Journey Indicator */}
-          <div className="bg-white/40 backdrop-blur-sm rounded-xl p-space-sm mb-space-xl shadow-sm border border-gray-100 self-start md:self-center w-full sm:w-auto">
+          {/* <div className="bg-white/40 backdrop-blur-sm rounded-xl p-space-md mb-space-xl shadow-sm border border-gray-100 self-start md:self-center w-full sm:w-auto">
             <div className="flex flex-col sm:flex-row items-start md:items-center justify-start md:justify-center gap-4 text-gray-600">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
@@ -152,20 +156,20 @@ export default function Hackathon() {
                 <span className="font-label-sm text-label-sm text-gray-500 ">PRODUCT</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row flex-wrap justify-start md:justify-center items-start md:items-center gap-4 w-full sm:w-auto">
             {isRegistrationOpen ? (
-              <Link className="inline-flex items-center justify-center bg-[#F26522] hover:bg-[#d9581a] text-white font-label-md text-sm font-semibold px-6 py-3 rounded-xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto" to="/hackathon/register">
+              <Link className="inline-flex items-center justify-center bg-[#F26522] hover:bg-[#d9581a] text-white font-label-md text-sm font-semibold px-6 py-4 rounded-xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto" to="/hackathon/register">
                 REGISTER YOUR TEAM &rarr;
               </Link>
             ) : (
-              <div className="inline-flex items-center justify-center bg-gray-300 text-gray-700 font-label-md text-sm font-semibold px-6 py-3 rounded-xl shadow-sm cursor-not-allowed w-full sm:w-auto">
+              <div className="inline-flex items-center justify-center bg-gray-300 text-gray-700 font-label-md text-sm font-semibold px-6 py-4 rounded-xl shadow-sm cursor-not-allowed w-full sm:w-auto">
                 REGISTRATION CLOSED
               </div>
             )}
-            <a className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-900 font-label-md text-sm font-semibold px-6 py-3 rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto" href="#journey">
+            <a className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-900 font-label-md text-sm font-semibold px-6 py-4 rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto" href="#journey">
               VIEW THE 3 ROUNDS &rarr;
             </a>
           </div>
@@ -980,7 +984,7 @@ export default function Hackathon() {
         <div className="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-gutter text-center">
           <div className="max-w-2xl mx-auto space-y-space-md">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-primary font-label-eyebrow text-label-eyebrow uppercase tracking-widest">
-              INFOBEE • MCET
+              Infobee • Dr. MCET
             </div>
             <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-on-surface tracking-tight">
               Ready to Build?

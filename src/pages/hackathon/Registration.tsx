@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Users, CheckCircle, ChevronRight, Check, AlertCircle, Search, LogIn, MonitorSmartphone, X, ChevronLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_URL } from '../../api';
 
 export default function Registration() {
   const navigate = useNavigate();
@@ -35,13 +38,14 @@ export default function Registration() {
 
   const isRollInvalid = (roll: string) => {
     const r = roll.trim().toUpperCase();
-    return r.length >= 8 && !eligibleStudents.some(s => s.roll === r);
+    if (r.length === 0) return false;
+    return !eligibleStudents.some(s => s.roll === r);
   };
 
   const anyInvalidRoll = allRolls.some(r => isRollInvalid(r));
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/hackathon/eligible-students/')
+    fetch(`${API_URL}/hackathon/eligible-students/`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setEligibleStudents(data);
@@ -51,7 +55,7 @@ export default function Registration() {
 
   useEffect(() => {
     if (phase === 2) {
-      fetch('http://127.0.0.1:8000/api/hackathon/available-scenarios/')
+      fetch(`${API_URL}/hackathon/available-scenarios/`)
         .then(res => res.json())
         .then(data => {
           if (data.is_registration_open === false) {
@@ -88,7 +92,7 @@ export default function Registration() {
     if (field === 'roll') {
       newMembers[index].roll = value.toUpperCase();
     } else {
-      newMembers[index].name = value;
+      newMembers[index].name = value.replace(/[^a-zA-Z\s]/g, '');
     }
     setMembers(newMembers);
   };
@@ -131,7 +135,7 @@ export default function Registration() {
     setIsSubmitting(true);
     setSubmitError('');
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/hackathon/register/', {
+      const response = await fetch(`${API_URL}/hackathon/register/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -213,7 +217,11 @@ export default function Registration() {
                     <div>
                       <label className="block text-[10px] font-poppins text-brand-grayMuted mb-1 font-medium" htmlFor="input-leader-roll">Roll Number *</label>
                       <input
-                        className="w-full h-10 px-3 rounded-lg border border-brand-border bg-brand-bgWarm text-brand-navy text-sm font-poppins font-semibold focus:outline-none focus:border-brand-navy focus:ring-1 focus:ring-brand-navy"
+                        className={`w-full h-10 px-3 rounded-lg border text-sm font-poppins font-semibold focus:outline-none focus:ring-1 transition-colors ${
+                          isRollInvalid(leaderRoll)
+                            ? 'border-red-500 bg-red-50 text-red-900 focus:border-red-500 focus:ring-red-500'
+                            : 'border-brand-border bg-brand-bgWarm text-brand-navy focus:border-brand-navy focus:ring-brand-navy'
+                        }`}
                         id="input-leader-roll"
                         list="eligible-students-list"
                         placeholder="7276********"
@@ -222,7 +230,10 @@ export default function Registration() {
                         onChange={(e) => onLeaderRollChange(e.target.value)}
                       />
                       {isRollInvalid(leaderRoll) && (
-                        <p className="text-[10px] font-poppins text-brand-red mt-1">⚠️ Roll no. not in 2nd year DB.</p>
+                        <div className="flex items-center gap-1 mt-1.5 text-red-600">
+                          <AlertCircle size={12} />
+                          <p className="text-[10px] font-poppins font-medium">Roll no. not in 2nd year DB.</p>
+                        </div>
                       )}
                     </div>
                     <div>
@@ -233,7 +244,7 @@ export default function Registration() {
                         placeholder="Full Name"
                         type="text"
                         value={leaderName}
-                        onChange={(e) => setLeaderName(e.target.value)}
+                        onChange={(e) => setLeaderName(e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
                       />
                     </div>
                   </div>
@@ -252,7 +263,11 @@ export default function Registration() {
                         <div className="relative flex flex-col">
                           <label className="block text-[10px] text-brand-grayMuted mb-1 font-medium">Roll Number</label>
                           <input
-                            className="w-full h-10 px-3 rounded-lg border border-brand-border bg-white text-sm font-poppins focus:outline-none focus:border-brand-navy"
+                            className={`w-full h-10 px-3 rounded-lg border text-sm font-poppins focus:outline-none focus:ring-1 transition-colors ${
+                              isRollInvalid(members[idx].roll)
+                                ? 'border-red-500 bg-red-50 text-red-900 focus:border-red-500 focus:ring-red-500'
+                                : 'border-brand-border bg-white text-brand-navy focus:border-brand-navy focus:ring-brand-navy'
+                            }`}
                             placeholder="7276********"
                             list="eligible-students-list"
                             type="text"
@@ -260,7 +275,10 @@ export default function Registration() {
                             onChange={(e) => handleMemberChange(idx, 'roll', e.target.value)}
                           />
                           {isRollInvalid(members[idx].roll) && (
-                            <p className="text-[10px] font-poppins text-brand-red mt-1 absolute -bottom-4 left-0">⚠️ Roll no. not in 2nd year DB.</p>
+                            <div className="flex items-center gap-1 mt-1.5 text-red-600">
+                              <AlertCircle size={12} />
+                              <p className="text-[10px] font-poppins font-medium">Roll no. not in 2nd year DB.</p>
+                            </div>
                           )}
                         </div>
                         <div className="flex flex-col">
@@ -281,7 +299,10 @@ export default function Registration() {
 
               {/* Inline validation summary */}
               {hasDuplicates && (
-                <p className="text-[10px] font-poppins text-brand-red">⚠️ Duplicate roll numbers detected. Must be unique.</p>
+                <div className="flex items-center gap-2 p-3 mt-4 rounded-lg bg-red-50 border border-red-200 text-red-600">
+                  <AlertCircle size={16} className="shrink-0" />
+                  <p className="text-xs font-poppins font-medium">Duplicate roll numbers detected. Each member must have a unique roll number.</p>
+                </div>
               )}
 
 
@@ -490,9 +511,9 @@ export default function Registration() {
       {/* ============================================== */}
       {/* RIGHT SIDE: STATUS/INFO PANEL (FIXED/STATIC) */}
       {/* ============================================== */}
-      <div className="hidden lg:block w-full lg:w-[40%] h-full bg-slate-50 border-t lg:border-t-0 lg:border-l border-brand-border p-4 md:p-8 overflow-y-auto">
+      <div className="hidden lg:block w-full lg:w-[40%] h-full bg-white border-t lg:border-t-0 lg:border-l border-brand-border p-6 md:p-10 overflow-y-auto">
 
-        <div className="max-w-md mx-auto">
+        <div className="w-full h-full flex flex-col">
           {phase === 4 && (
             <div className="mb-4 p-3 rounded-xl bg-brand-bgWarm border border-brand-border flex items-center justify-between shadow-sm">
               <div>
@@ -513,55 +534,55 @@ export default function Registration() {
             </div>
           )}
 
-          <div className="bg-white border border-brand-border rounded-xl p-4 shadow-sm">
-            <div className="flex items-center justify-between pb-3 border-b border-brand-border">
-              <h3 className="text-[10px] font-poppins tracking-widest font-bold text-brand-navy">Team Summary</h3>
+          <div className="flex-1 flex flex-col">
+            <div className="flex items-center justify-between pb-4 border-b border-brand-border">
+              <h3 className="text-xs md:text-sm font-poppins tracking-widest font-bold text-brand-navy uppercase">Team Summary</h3>
               {isPhase1Valid ? (
-                <span className="text-[9px] font-poppins px-1.5 py-0.5 rounded bg-brand-greenLight text-brand-green border border-brand-green/20 font-bold">Ready</span>
+                <span className="text-[10px] font-poppins px-2 py-1 rounded bg-brand-greenLight text-brand-green border border-brand-green/20 font-bold">Ready</span>
               ) : (
-                <span className="text-[9px] font-poppins px-1.5 py-0.5 rounded bg-slate-100 text-brand-grayMuted border border-brand-border font-semibold">Incomplete</span>
+                <span className="text-[10px] font-poppins px-2 py-1 rounded bg-slate-100 text-brand-grayMuted border border-brand-border font-semibold">Incomplete</span>
               )}
             </div>
 
-            <div className="py-3 space-y-3 text-[11px]">
+            <div className="py-6 space-y-6">
               <div>
-                <span className="text-[9px] font-poppins tracking-wider text-brand-grayMuted block mb-0.5">Team</span>
-                <p className="font-bold text-brand-navy truncate">{teamName || 'Not added'}</p>
+                <span className="text-[10px] md:text-xs font-poppins tracking-wider text-brand-grayMuted block mb-1 uppercase">Team</span>
+                <p className="text-sm font-bold text-brand-navy break-words min-h-[1.5rem]">{teamName || 'Not added'}</p>
               </div>
 
               <div>
-                <span className="text-[9px] font-poppins tracking-wider text-brand-grayMuted block mb-0.5">Leader</span>
-                <p className="font-semibold text-brand-navy truncate">{leaderName || 'Not added'}</p>
-                {leaderRoll && <p className="font-poppins text-[10px] text-brand-grayMuted">{leaderRoll}</p>}
+                <span className="text-[10px] md:text-xs font-poppins tracking-wider text-brand-grayMuted block mb-1 uppercase">Leader</span>
+                <p className="text-sm font-semibold text-brand-navy break-words min-h-[1.5rem]">{leaderName || 'Not added'}</p>
+                {leaderRoll && <p className="font-poppins text-xs text-brand-grayMuted mt-0.5">{leaderRoll}</p>}
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[9px] font-poppins tracking-wider text-brand-grayMuted">Members</span>
-                  <span className="font-poppins text-[10px] font-bold text-brand-navy">{filledMembersCount} / 3</span>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] md:text-xs font-poppins tracking-wider text-brand-grayMuted uppercase">Members</span>
+                  <span className="font-poppins text-xs font-bold text-brand-navy">{filledMembersCount} / 3</span>
                 </div>
-                <div className="w-full h-1 rounded-full bg-slate-100 overflow-hidden">
+                <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden mb-4">
                   <div className="h-full bg-brand-navy transition-all duration-300" style={{ width: `${(filledMembersCount / 3) * 100}%` }}></div>
                 </div>
-              </div>
 
-              <div className="pt-2 border-t border-brand-border/60 text-[10px] space-y-1 text-brand-grayMuted">
-                {filledMembersCount === 0 ? (
-                  <span className="italic">No additional members added yet.</span>
-                ) : (
-                  members.filter(m => m.name && m.roll).map((m, i) => (
-                    <div key={i} className="flex items-center justify-between py-0.5 border-b border-brand-border/40 last:border-0">
-                      <span className="font-medium text-brand-navy truncate max-w-[130px]">{m.name}</span>
-                      <span className="font-poppins text-brand-grayMuted">{m.roll}</span>
-                    </div>
-                  ))
-                )}
+                <div className="pt-4 border-t border-brand-border/60 text-xs md:text-sm space-y-2 text-brand-grayMuted">
+                  {filledMembersCount === 0 ? (
+                    <span className="italic">No additional members added yet.</span>
+                  ) : (
+                    members.filter(m => m.name && m.roll).map((m, i) => (
+                      <div key={i} className="flex items-center justify-between py-1 border-b border-brand-border/40 last:border-0">
+                        <span className="font-medium text-brand-navy break-words max-w-[150px]">{m.name}</span>
+                        <span className="font-poppins text-brand-grayMuted">{m.roll}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
 
             {phase < 4 && (
-              <div className="mt-3 pt-3 border-t border-brand-border text-[10px] text-brand-grayMuted space-y-1 font-poppins">
-                <span className="font-bold text-brand-navy tracking-wider block ">Rules</span>
+              <div className="mt-auto pt-6 border-t border-brand-border text-xs text-brand-grayMuted space-y-2 font-poppins">
+                <span className="font-bold text-brand-navy tracking-wider block uppercase">Rules</span>
                 <p>• Exactly 4 members.</p>
                 <p>• Unique college roll numbers.</p>
                 <p>• Scenario allocation is final.</p>

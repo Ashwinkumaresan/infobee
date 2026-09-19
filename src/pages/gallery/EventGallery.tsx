@@ -45,11 +45,11 @@ export default function EventGallery() {
 
   const getFullImageUrl = (imagePath: string) => {
     if (!imagePath) return '';
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return `http://127.0.0.1:8000${imagePath}`;
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('/media/')) {
+      return imagePath;
     }
-    return imagePath;
+    return `/media/${imagePath}`;
   };
 
   if (loading) {

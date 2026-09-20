@@ -25,6 +25,11 @@ export default function Registration() {
   const [isHackathonFull, setIsHackathonFull] = useState(false);
   const [isRegistrationOpen, setIsRegistrationOpen] = useState<boolean>(true);
   const [registrationId, setRegistrationId] = useState<string | null>(null);
+  
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
+  const [isPptTimeEnd, setIsPptTimeEnd] = useState(false);
+  const [isLeader, setIsLeader] = useState(false);
+  const [loadingInitialStatus, setLoadingInitialStatus] = useState(true);
 
   // Wheel state
   const [wheelRotation, setWheelRotation] = useState(0);
@@ -44,8 +49,18 @@ export default function Registration() {
 
   const anyInvalidRoll = allRolls.some(r => isRollInvalid(r));
 
+  const getCookie = (name: string) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+    return null;
+  };
+
   useEffect(() => {
-    fetch(`${API_URL}/hackathon/eligible-students/`)
+    const token = getCookie('access_token');
+    fetch(`${API_URL}/hackathon/eligible-students/`, {
+      headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+    })
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setEligibleStudents(data);
@@ -54,8 +69,81 @@ export default function Registration() {
   }, []);
 
   useEffect(() => {
+    const fetchProfile = async () => {
+      const token = getCookie('access_token');
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/student/profile/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const roll = data.register_number || '';
+          setLeaderRoll(roll);
+          
+          if (roll) {
+            const storedScenario = localStorage.getItem(`hackathon_draft_scenario_${roll}`);
+            if (storedScenario) {
+              setScenarioAllocated(storedScenario);
+            }
+            
+            const formDraft = localStorage.getItem(`hackathon_form_draft_${roll}`);
+            if (formDraft) {
+              try {
+                const parsed = JSON.parse(formDraft);
+                if (parsed.teamName) setTeamName(parsed.teamName);
+                if (parsed.leaderName) setLeaderName(parsed.leaderName);
+                if (parsed.members) setMembers(parsed.members);
+                if (parsed.phase && parsed.phase < 4) setPhase(parsed.phase);
+              } catch (e) {}
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch user profile", err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      const token = getCookie('access_token');
+      if (!token) {
+        setLoadingInitialStatus(false);
+        return;
+      }
+      try {
+        const response = await fetch(`${API_URL}/hackathon/my-team/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.registered) {
+            setAlreadyRegistered(true);
+            setIsPptTimeEnd(data.is_ppt_time_end || false);
+            setIsLeader(data.is_leader || false);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch hackathon status", err);
+      } finally {
+        setLoadingInitialStatus(false);
+      }
+    };
+    fetchStatus();
+  }, []);
+
+  useEffect(() => {
     if (phase === 2) {
-      fetch(`${API_URL}/hackathon/available-scenarios/`)
+      const token = getCookie('access_token');
+      fetch(`${API_URL}/hackathon/available-scenarios/`, {
+        headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+      })
         .then(res => res.json())
         .then(data => {
           if (data.is_registration_open === false) {
@@ -69,11 +157,38 @@ export default function Registration() {
             setAvailableScenarios([]);
           } else if (Array.isArray(data.available_scenarios)) {
             setAvailableScenarios(data.available_scenarios);
+            
+            // Validate if the stored draft scenario is still available
+            const token = getCookie('access_token');
+            // leaderRoll might be slightly stale in this effect closure if it wasn't added to deps, 
+            // but we can just parse the active item from local storage by checking all keys, 
+            // or we can safely use leaderRoll since it's set on mount before we ever reach phase 2.
+            if (leaderRoll) {
+              const draft = localStorage.getItem(`hackathon_draft_scenario_${leaderRoll}`);
+              if (draft && !data.available_scenarios.includes(draft)) {
+                setScenarioAllocated(null);
+                localStorage.removeItem(`hackathon_draft_scenario_${leaderRoll}`);
+                alert(`Your previously allocated scenario (${draft}) is now full. Please spin again to get a new scenario.`);
+              }
+            }
           }
         })
         .catch(err => console.error("Failed to fetch available scenarios", err));
     }
-  }, [phase]);
+  }, [phase, leaderRoll]);
+
+  // Save form draft to localStorage whenever relevant state changes
+  useEffect(() => {
+    if (!alreadyRegistered && !loadingInitialStatus && leaderRoll) {
+      const draft = {
+        teamName,
+        leaderName,
+        members,
+        phase: phase < 4 ? phase : 1
+      };
+      localStorage.setItem(`hackathon_form_draft_${leaderRoll}`, JSON.stringify(draft));
+    }
+  }, [teamName, leaderName, members, phase, alreadyRegistered, loadingInitialStatus, leaderRoll]);
 
   const isPhase1Valid =
     teamName.trim() !== '' &&
@@ -128,6 +243,9 @@ export default function Registration() {
 
     setTimeout(() => {
       setScenarioAllocated(chosenScenario);
+      if (leaderRoll) {
+        localStorage.setItem(`hackathon_draft_scenario_${leaderRoll}`, chosenScenario);
+      }
     }, 4300);
   };
 
@@ -135,9 +253,13 @@ export default function Registration() {
     setIsSubmitting(true);
     setSubmitError('');
     try {
+      const token = getCookie('access_token');
       const response = await fetch(`${API_URL}/hackathon/register/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({
           team_name: teamName,
           leader_roll: leaderRoll,
@@ -149,10 +271,23 @@ export default function Registration() {
       });
       const data = await response.json();
       if (response.ok) {
+        if (leaderRoll) {
+          localStorage.removeItem(`hackathon_draft_scenario_${leaderRoll}`);
+          localStorage.removeItem(`hackathon_form_draft_${leaderRoll}`);
+        }
         setRegistrationId(data.id);
         setPhase(4);
       } else {
-        setSubmitError(data.error || 'Registration failed');
+        const errorMsg = data.error || 'Registration failed';
+        setSubmitError(errorMsg);
+        
+        if (errorMsg.toLowerCase().includes('maximum capacity') || errorMsg.toLowerCase().includes('spin again')) {
+          if (leaderRoll) {
+            localStorage.removeItem(`hackathon_draft_scenario_${leaderRoll}`);
+          }
+          setScenarioAllocated(null);
+          setPhase(2);
+        }
       }
     } catch (err) {
       setSubmitError('Network error. Please try again.');
@@ -160,6 +295,37 @@ export default function Registration() {
       setIsSubmitting(false);
     }
   };
+
+  if (loadingInitialStatus) {
+    return <div className="flex h-screen items-center justify-center font-poppins text-brand-navy">Loading...</div>;
+  }
+
+  if (alreadyRegistered) {
+    return (
+      <div className="flex flex-col h-[100dvh] w-full bg-white pt-[88px] text-brand-navy font-sans overflow-hidden items-center justify-center p-8 text-center">
+         <div className="max-w-md w-full border border-brand-border rounded-xl p-8 shadow-sm flex flex-col items-center">
+           <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-6 text-green-600">
+             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+             </svg>
+           </div>
+           <h1 className="font-headline-sm text-headline-sm-mobile md:text-headline-sm font-bold tracking-tight mb-3 text-brand-navy">Already Registered</h1>
+           <p className="text-secondary mb-8 font-poppins text-sm leading-relaxed">
+             You have already registered for the hackathon. You can manage your team {isLeader ? 'and submit your PPT ' : ''}from your profile.
+           </p>
+           {(!isPptTimeEnd && isLeader) ? (
+             <button onClick={() => navigate('/student/profile')} className="w-full px-6 py-3.5 bg-brand-orange text-white rounded-lg font-poppins font-semibold hover:opacity-90 transition-opacity shadow-sm">
+               Submit PPT
+             </button>
+           ) : (
+             <button onClick={() => navigate('/student/profile')} className="w-full px-6 py-3.5 bg-brand-bgWarm border border-brand-border text-brand-navy rounded-lg font-poppins font-semibold hover:bg-gray-100 transition-colors">
+               View Profile
+             </button>
+           )}
+         </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col lg:flex-row h-[100dvh] pt-[88px] w-full bg-white text-brand-navy font-sans selection:bg-brand-orange selection:text-white overflow-hidden">
@@ -218,21 +384,21 @@ export default function Registration() {
                       <label className="block text-[10px] font-poppins text-brand-grayMuted mb-1 font-medium" htmlFor="input-leader-roll">Roll Number *</label>
                       <input
                         className={`w-full h-10 px-3 rounded-lg border text-sm font-poppins font-semibold focus:outline-none focus:ring-1 transition-colors ${
-                          isRollInvalid(leaderRoll)
+                          isRollInvalid(leaderRoll) && leaderRoll !== ''
                             ? 'border-red-500 bg-red-50 text-red-900 focus:border-red-500 focus:ring-red-500'
-                            : 'border-brand-border bg-brand-bgWarm text-brand-navy focus:border-brand-navy focus:ring-brand-navy'
+                            : 'border-brand-border bg-gray-50 text-gray-500 cursor-not-allowed'
                         }`}
                         id="input-leader-roll"
-                        list="eligible-students-list"
                         placeholder="7276********"
                         type="text"
                         value={leaderRoll}
-                        onChange={(e) => onLeaderRollChange(e.target.value)}
+                        readOnly
+                        disabled
                       />
-                      {isRollInvalid(leaderRoll) && (
+                      {isRollInvalid(leaderRoll) && leaderRoll !== '' && (
                         <div className="flex items-center gap-1 mt-1.5 text-red-600">
                           <AlertCircle size={12} />
-                          <p className="text-[10px] font-poppins font-medium">Roll no. not in 2nd year DB.</p>
+                          <p className="text-[10px] font-poppins font-medium">Invalid or already registered roll no.</p>
                         </div>
                       )}
                     </div>
@@ -277,7 +443,7 @@ export default function Registration() {
                           {isRollInvalid(members[idx].roll) && (
                             <div className="flex items-center gap-1 mt-1.5 text-red-600">
                               <AlertCircle size={12} />
-                              <p className="text-[10px] font-poppins font-medium">Roll no. not in 2nd year DB.</p>
+                              <p className="text-[10px] font-poppins font-medium">Invalid or already registered roll no.</p>
                             </div>
                           )}
                         </div>
@@ -398,10 +564,16 @@ export default function Registration() {
                     <h3 className="text-3xl font-bold text-brand-navy tracking-tight">{scenarioAllocated}</h3>
                   </div>
                   
-                  <div className="w-full pt-4 border-t border-brand-border">
+                  <div className="w-full pt-4 border-t border-brand-border flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => setPhase(1)}
+                      className="w-full sm:w-1/3 inline-flex items-center justify-center bg-surface-container hover:bg-gray-200 text-secondary font-label-md text-label-md font-bold px-7 py-3.5 rounded-lg shadow-sm transition-all duration-200"
+                    >
+                      Edit Team
+                    </button>
                     <button
                       onClick={() => setPhase(3)}
-                      className="w-full inline-flex items-center justify-center bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md font-bold px-7 py-3.5 rounded-lg shadow-sm transition-all duration-200 hover:-translate-y-0.5 gap-2"
+                      className="w-full sm:w-2/3 inline-flex items-center justify-center bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md font-bold px-7 py-3.5 rounded-lg shadow-sm transition-all duration-200 hover:-translate-y-0.5 gap-2"
                     >
                       <span>Continue To Review</span>
                       <span>→</span>
@@ -436,15 +608,24 @@ export default function Registration() {
               {/* Review Actions */}
               <div className="pt-4 border-t border-brand-border flex flex-col items-end gap-3">
                 {submitError && <p className="text-brand-red text-xs font-poppins font-semibold">{submitError}</p>}
-                <button
-                  onClick={handleConfirm}
-                  disabled={!agreementChecked || isSubmitting}
-                  className={`w-full sm:w-auto inline-flex items-center justify-center font-label-md text-label-md font-bold px-7 py-3.5 rounded-lg shadow-sm transition-all duration-200 gap-2 ${agreementChecked && !isSubmitting ? 'bg-primary-container hover:bg-primary text-on-primary hover:-translate-y-0.5 cursor-pointer' : 'bg-surface-container text-secondary cursor-not-allowed'
-                    }`}
-                >
+                
+                <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+                  <button
+                    onClick={() => setPhase(1)}
+                    className="w-full sm:w-auto inline-flex items-center justify-center font-label-md text-label-md font-bold px-7 py-3.5 rounded-lg shadow-sm transition-all duration-200 bg-surface-container hover:bg-gray-200 text-secondary"
+                  >
+                    Edit Team
+                  </button>
+                  <button
+                    onClick={handleConfirm}
+                    disabled={!agreementChecked || isSubmitting}
+                    className={`w-full sm:w-auto inline-flex items-center justify-center font-label-md text-label-md font-bold px-7 py-3.5 rounded-lg shadow-sm transition-all duration-200 gap-2 ${agreementChecked && !isSubmitting ? 'bg-primary-container hover:bg-primary text-on-primary hover:-translate-y-0.5 cursor-pointer' : 'bg-surface-container text-secondary cursor-not-allowed'
+                      }`}
+                  >
                   <span>{isSubmitting ? 'Submitting...' : 'Confirm & Submit Registration'}</span>
                   {!isSubmitting && <span>✓</span>}
                 </button>
+                </div>
               </div>
             </div>
           </div>
@@ -583,8 +764,8 @@ export default function Registration() {
             {phase < 4 && (
               <div className="mt-auto pt-6 border-t border-brand-border text-xs text-brand-grayMuted space-y-2 font-poppins">
                 <span className="font-bold text-brand-navy tracking-wider block uppercase">Rules</span>
-                <p>• Exactly 4 members.</p>
-                <p>• Unique college roll numbers.</p>
+                <p>• Min 3 and Max 4 members per team.</p>
+                <p>• Only IT department 2nd year students can register.</p>
                 <p>• Scenario allocation is final.</p>
               </div>
             )}

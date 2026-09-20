@@ -26,11 +26,25 @@ export default function StaffSignin({ setIsLoggedIn }: StaffSigninProps) {
     e.preventDefault();
     setLoading(true);
     
-    // Clear old data first
+    // Clear old data first, but preserve hackathon drafts
     document.cookie = 'access_token=; path=/; max-age=0';
     document.cookie = 'refresh_token=; path=/; max-age=0';
+    
+    const hackathonKeys: { key: string; value: string }[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('hackathon_')) {
+        const val = localStorage.getItem(key);
+        if (val !== null) hackathonKeys.push({ key, value: val });
+      }
+    }
+    
     localStorage.clear();
     sessionStorage.clear();
+    
+    hackathonKeys.forEach(item => {
+      localStorage.setItem(item.key, item.value);
+    });
 
     try {
       const response = await fetch(`${API_URL}/token/`, {

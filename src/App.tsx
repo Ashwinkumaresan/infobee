@@ -8,6 +8,7 @@ import Detail from './pages/research/Detail';
 import PortfolioLanding from './pages/portfolio/Portfolio';
 import Hackathon from './pages/hackathon/Hackathon';
 import Registration from './pages/hackathon/Registration';
+import ScenarioDetails from './pages/hackathon/ScenarioDetails';
 import Footer from './components/Footer';
 import { CalendarModal, JoinModal } from './components/Modals';
 import AdminPortal from './components/AdminPortal';
@@ -48,69 +49,19 @@ export default function App() {
   const [registrations, setRegistrations] = useState<Array<{ id: string; eventId: string; ticketCode: string; name: string; email: string; checkedIn?: boolean }>>(() => {
     const saved = localStorage.getItem('infobee_registrations');
     if (saved) return JSON.parse(saved);
-    
-    // Seed initial registrations if empty
-    return [
-      { id: 'reg-1', eventId: 'evt-cloud101', ticketCode: 'TKT-871239', name: 'Manoj Kumar S', email: 'manoj.it21@mcet.in', checkedIn: true },
-      { id: 'reg-2', eventId: 'evt-cyberfold', ticketCode: 'TKT-928131', name: 'Deepika R', email: 'deepika.cse22@mcet.in', checkedIn: false },
-      { id: 'reg-3', eventId: 'evt-cloud101', ticketCode: 'TKT-104921', name: 'Vigneshwaran M', email: 'vignesh.it20@mcet.in', checkedIn: false }
-    ];
+    return [];
   });
 
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>(() => {
     const saved = localStorage.getItem('infobee_join_requests');
     if (saved) return JSON.parse(saved);
-
-    // Seed initial applications if empty
-    return [
-      {
-        id: 'req-1',
-        name: 'Pranesh Kumar S',
-        email: 'pranesh@mcet.in',
-        department: 'Information Technology',
-        year: 'Second Year',
-        interestArea: 'Web Stack & Frameworks (React, MERN)',
-        reason: 'I want to improve my full-stack skills and join the core student development team next year.',
-        membershipId: 'IB-2026-1042',
-        status: 'pending',
-        timestamp: new Date(Date.now() - 3600000 * 24).toISOString()
-      },
-      {
-        id: 'req-2',
-        name: 'Samyuktha M',
-        email: 'samyuktha@mcet.in',
-        department: 'Computer Science',
-        year: 'Third Year',
-        interestArea: 'Machine Learning & Data Intelligence',
-        reason: 'Fascinated by collaborative peer environments. Hoping to lead Python or AI tutorials.',
-        membershipId: 'IB-2026-9821',
-        status: 'pending',
-        timestamp: new Date(Date.now() - 3600000 * 5).toISOString()
-      }
-    ];
+    return [];
   });
 
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>(() => {
     const saved = localStorage.getItem('infobee_contact_submissions');
     if (saved) return JSON.parse(saved);
-
-    // Seed initial submissions if empty
-    return [
-      {
-        id: 'sub-1',
-        name: 'Dr. Ramasamy G',
-        email: 'ramasamy.it@mcet.in',
-        message: 'Can the Infobee committee organize a workshop on Docker & Kubernetes for final year IT students next fortnight?',
-        timestamp: new Date(Date.now() - 3600000 * 12).toISOString()
-      },
-      {
-        id: 'sub-2',
-        name: 'Naveen Kumar',
-        email: 'naveen@zoho.com',
-        message: 'Hi, I am an MCET alumnus working as a Senior Frontend Lead at Zoho. I would love to deliver a guest lecture on UI architectures.',
-        timestamp: new Date(Date.now() - 3600000 * 48).toISOString()
-      }
-    ];
+    return [];
   });
 
   // Sync to localStorage on state alterations
@@ -298,7 +249,8 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/hackathon" element={<Hackathon />} />
-          <Route path="/hackathon/register" element={<Registration />} />
+          <Route path="/hackathon/register" element={isLoggedIn ? <Registration /> : <Navigate to="/student/signin" state={{ from: "/hackathon/register" }} replace />} />
+          <Route path="/hackathon/scenario/:id" element={<ScenarioDetails />} />
           <Route path="/" element={<Navigate to="/hackathon" replace />} />
           
           {/* 

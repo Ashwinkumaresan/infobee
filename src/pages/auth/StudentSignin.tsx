@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { API_URL } from '../../api';
 
@@ -14,6 +14,8 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/student/profile';
 
   useEffect(() => {
     const value = `; ${document.cookie}`;
@@ -27,11 +29,25 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
     e.preventDefault();
     setLoading(true);
     
-    // Clear old data first
+    // Clear old data first, but preserve hackathon drafts
     document.cookie = 'access_token=; path=/; max-age=0';
     document.cookie = 'refresh_token=; path=/; max-age=0';
+    
+    const hackathonKeys: { key: string; value: string }[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('hackathon_')) {
+        const val = localStorage.getItem(key);
+        if (val !== null) hackathonKeys.push({ key, value: val });
+      }
+    }
+    
     localStorage.clear();
     sessionStorage.clear();
+    
+    hackathonKeys.forEach(item => {
+      localStorage.setItem(item.key, item.value);
+    });
 
     try {
       const response = await fetch(`${API_URL}/token/`, {
@@ -69,15 +85,15 @@ export default function StudentSignin({ setIsLoggedIn }: StudentSigninProps) {
             if (roleData.role === 'staff') {
               navigate('/staff/profile', { replace: true });
             } else {
-              navigate('/student/profile', { replace: true });
+              navigate(from, { replace: true });
             }
           } else {
             toast.success('Login success');
-            navigate('/student/profile', { replace: true });
+            navigate(from, { replace: true });
           }
         } catch (roleErr) {
           toast.success('Login success');
-          navigate('/student/profile', { replace: true });
+          navigate(from, { replace: true });
         }
       } else {
         const data = await response.json();

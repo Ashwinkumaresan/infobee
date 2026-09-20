@@ -190,7 +190,7 @@ export default function Hackathon() {
           {/* 5 Scenario Tech Spec Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
             {/* Scenario 01 */}
-            <div className={`bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 01') ? 'pointer-events-none' : ''}`}>
+            <Link to="/hackathon/scenario/1" className={`block bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 01') ? 'pointer-events-none' : 'cursor-pointer'}`}>
               {availableScenarios && !availableScenarios.includes('SCENARIO 01') && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-surface-container-lowest/80 backdrop-blur-[2px]">
                   <div className="bg-surface-container-highest text-on-surface font-label-md px-5 py-2.5 rounded-full shadow-sm flex items-center gap-2 border border-outline-variant">
@@ -210,10 +210,10 @@ export default function Hackathon() {
               <div className="bg-surface-container-low rounded-lg p-space-sm space-y-1.5 font-label-sm text-label-sm text-secondary">
                 <div className="flex justify-between"><span className="text-on-surface-variant">INDUSTRY</span><span className="text-on-surface font-medium truncate ml-4">HealthTech / SaaS</span></div>
               </div>
-            </div>
+            </Link>
 
             {/* Scenario 02 */}
-            <div className={`bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 02') ? 'pointer-events-none' : ''}`}>
+            <Link to="/hackathon/scenario/2" className={`block bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 02') ? 'pointer-events-none' : 'cursor-pointer'}`}>
               {availableScenarios && !availableScenarios.includes('SCENARIO 02') && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-surface-container-lowest/80 backdrop-blur-[2px]">
                   <div className="bg-surface-container-highest text-on-surface font-label-md px-5 py-2.5 rounded-full shadow-sm flex items-center gap-2 border border-outline-variant">
@@ -233,10 +233,10 @@ export default function Hackathon() {
               <div className="bg-surface-container-low rounded-lg p-space-sm space-y-1.5 font-label-sm text-label-sm text-secondary">
                 <div className="flex justify-between"><span className="text-on-surface-variant">INDUSTRY</span><span className="text-on-surface font-medium truncate ml-4">Mobility Tech / Logistics</span></div>
               </div>
-            </div>
+            </Link>
 
             {/* Scenario 03 */}
-            <div className={`bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 03') ? 'pointer-events-none' : ''}`}>
+            <Link to="/hackathon/scenario/3" className={`block bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 03') ? 'pointer-events-none' : 'cursor-pointer'}`}>
               {availableScenarios && !availableScenarios.includes('SCENARIO 03') && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-surface-container-lowest/80 backdrop-blur-[2px]">
                   <div className="bg-surface-container-highest text-on-surface font-label-md px-5 py-2.5 rounded-full shadow-sm flex items-center gap-2 border border-outline-variant">
@@ -256,10 +256,10 @@ export default function Hackathon() {
               <div className="bg-surface-container-low rounded-lg p-space-sm space-y-1.5 font-label-sm text-label-sm text-secondary">
                 <div className="flex justify-between"><span className="text-on-surface-variant">INDUSTRY</span><span className="text-on-surface font-medium truncate ml-4">FinTech / Analytics</span></div>
               </div>
-            </div>
+            </Link>
 
             {/* Scenario 04 */}
-            <div className={`bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 04') ? 'pointer-events-none' : ''}`}>
+            <Link to="/hackathon/scenario/4" className={`block bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 04') ? 'pointer-events-none' : 'cursor-pointer'}`}>
               {availableScenarios && !availableScenarios.includes('SCENARIO 04') && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-surface-container-lowest/80 backdrop-blur-[2px]">
                   <div className="bg-surface-container-highest text-on-surface font-label-md px-5 py-2.5 rounded-full shadow-sm flex items-center gap-2 border border-outline-variant">
@@ -279,10 +279,10 @@ export default function Hackathon() {
               <div className="bg-surface-container-low rounded-lg p-space-sm space-y-1.5 font-label-sm text-label-sm text-secondary">
                 <div className="flex justify-between"><span className="text-on-surface-variant">INDUSTRY</span><span className="text-on-surface font-medium truncate ml-4">ERP / Enterprise SaaS</span></div>
               </div>
-            </div>
+            </Link>
 
             {/* Scenario 05 */}
-            <div className={`bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 05') ? 'pointer-events-none' : ''}`}>
+            <Link to="/hackathon/scenario/5" className={`block bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between relative overflow-hidden ${availableScenarios && !availableScenarios.includes('SCENARIO 05') ? 'pointer-events-none' : 'cursor-pointer'}`}>
               {availableScenarios && !availableScenarios.includes('SCENARIO 05') && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-surface-container-lowest/80 backdrop-blur-[2px]">
                   <div className="bg-surface-container-highest text-on-surface font-label-md px-5 py-2.5 rounded-full shadow-sm flex items-center gap-2 border border-outline-variant">
@@ -302,7 +302,7 @@ export default function Hackathon() {
               <div className="bg-surface-container-low rounded-lg p-space-sm space-y-1.5 font-label-sm text-label-sm text-secondary">
                 <div className="flex justify-between"><span className="text-on-surface-variant">INDUSTRY</span><span className="text-on-surface font-medium truncate ml-4">EdTech / Campus Tech</span></div>
               </div>
-            </div>
+            </Link>
 
             {/* Spec Architecture Badge Card */}
             <div className="bg-surface-container rounded-2xl p-space-lg flex flex-col justify-between">

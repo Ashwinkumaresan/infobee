@@ -100,6 +100,13 @@ class StudentProfile(models.Model):
     leetcode_id = models.CharField(max_length=255, blank=True)
     hackerrank_id = models.CharField(max_length=255, blank=True)
     hackerearth_id = models.CharField(max_length=255, blank=True)
+    
+    # Cached Stats for Export
+    github_repos_count = models.CharField(max_length=50, blank=True, default="N/A")
+    leetcode_solved_count = models.CharField(max_length=50, blank=True, default="N/A")
+    hackerrank_badges_count = models.CharField(max_length=50, blank=True, default="N/A")
+    hackerearth_problems_count = models.CharField(max_length=50, blank=True, default="N/A")
+    
     portfolio_link = models.URLField(blank=True, max_length=500)
     resume_file = models.FileField(upload_to='resumes/', null=True, blank=True)
     
@@ -196,3 +203,95 @@ class EventImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.event.name}"
+
+class HackathonRegistration(models.Model):
+    team_name = models.CharField(max_length=255)
+    leader_roll = models.CharField(max_length=50, unique=True, help_text="Roll number of the team leader")
+    leader_name = models.CharField(max_length=255)
+    team_members = models.JSONField(default=list, help_text="List of dicts: [{'name': '...', 'roll': '...'}]")
+    scenario_allocated = models.CharField(max_length=100, blank=True)
+    is_confirmed = models.BooleanField(default=True)
+    
+    # Progress and Status fields
+    is_round_1_selected = models.BooleanField(default=False)
+    is_round_2_selected = models.BooleanField(default=False)
+    is_round_3_selected = models.BooleanField(default=False)
+    is_winner = models.BooleanField(default=False)
+    
+    # File upload for PPT
+    ppt_file = models.FileField(upload_to='hackathon_ppts/', blank=True, null=True, help_text="Upload Presentation (PDF/PPT)")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    hackathon_id = models.CharField(max_length=20, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.hackathon_id:
+            super().save(*args, **kwargs)
+            self.hackathon_id = f"INF-2026-{self.id + 1000}"
+            self.save(update_fields=['hackathon_id'])
+        else:
+            super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.team_name} - {self.hackathon_id}"
+
+class HackathonSettings(models.Model):
+    max_total_teams = models.IntegerField(default=50, help_text="Maximum total teams allowed to register")
+    max_teams_scenario_1 = models.IntegerField(default=10, help_text="Maximum teams for SCENARIO 01")
+    max_teams_scenario_2 = models.IntegerField(default=10, help_text="Maximum teams for SCENARIO 02")
+    max_teams_scenario_3 = models.IntegerField(default=10, help_text="Maximum teams for SCENARIO 03")
+    max_teams_scenario_4 = models.IntegerField(default=10, help_text="Maximum teams for SCENARIO 04")
+    max_teams_scenario_5 = models.IntegerField(default=10, help_text="Maximum teams for SCENARIO 05")
+    is_registration_open = models.BooleanField(default=True)
+    is_ppt_time_end = models.BooleanField(default=False, help_text="If true, teams cannot upload or reupload PPT")
+
+    class Meta:
+        verbose_name_plural = "Hackathon Settings"
+
+    @property
+    def total_teams_registered(self):
+        return HackathonRegistration.objects.count()
+
+    @property
+    def scenario_1_registered(self):
+        return HackathonRegistration.objects.filter(scenario_allocated="SCENARIO 01").count()
+
+    @property
+    def scenario_2_registered(self):
+        return HackathonRegistration.objects.filter(scenario_allocated="SCENARIO 02").count()
+
+    @property
+    def scenario_3_registered(self):
+        return HackathonRegistration.objects.filter(scenario_allocated="SCENARIO 03").count()
+
+    @property
+    def scenario_4_registered(self):
+        return HackathonRegistration.objects.filter(scenario_allocated="SCENARIO 04").count()
+
+    @property
+    def scenario_5_registered(self):
+        return HackathonRegistration.objects.filter(scenario_allocated="SCENARIO 05").count()
+
+    def get_max_teams_for_scenario(self, scenario_name):
+        mapping = {
+            "SCENARIO 01": self.max_teams_scenario_1,
+            "SCENARIO 02": self.max_teams_scenario_2,
+            "SCENARIO 03": self.max_teams_scenario_3,
+            "SCENARIO 04": self.max_teams_scenario_4,
+            "SCENARIO 05": self.max_teams_scenario_5,
+        }
+        return mapping.get(scenario_name, 0)
+
+    def save(self, *args, **kwargs):
+        # Enforce singleton
+        if not self.pk and HackathonSettings.objects.exists():
+            return
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_settings(cls):
+        obj = cls.objects.first()
+        if not obj:
+            obj = cls.objects.create()
+        return obj

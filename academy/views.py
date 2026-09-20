@@ -37,6 +37,16 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class StaffProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def patch(self, request):
+        try:
+            profile = request.user.student_profile
+            if "portfolio_link" in request.data:
+                profile.portfolio_link = request.data["portfolio_link"]
+                profile.save()
+            return Response({"detail": "Profile updated successfully.", "portfolio_link": profile.portfolio_link})
+        except StudentProfile.DoesNotExist:
+            return Response({"detail": "Profile not found for this user."}, status=404)
+
     def get(self, request):
         try:
             profile = request.user.staff_profile
@@ -73,6 +83,16 @@ class StaffProfileView(APIView):
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def patch(self, request):
+        try:
+            profile = request.user.student_profile
+            if "portfolio_link" in request.data:
+                profile.portfolio_link = request.data["portfolio_link"]
+                profile.save()
+            return Response({"detail": "Profile updated successfully.", "portfolio_link": profile.portfolio_link})
+        except StudentProfile.DoesNotExist:
+            return Response({"detail": "Profile not found for this user."}, status=404)
+
     def get(self, request):
         try:
             profile = request.user.student_profile
@@ -83,6 +103,16 @@ class ProfileView(APIView):
 
 class CurrentUserRoleView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        try:
+            profile = request.user.student_profile
+            if "portfolio_link" in request.data:
+                profile.portfolio_link = request.data["portfolio_link"]
+                profile.save()
+            return Response({"detail": "Profile updated successfully.", "portfolio_link": profile.portfolio_link})
+        except StudentProfile.DoesNotExist:
+            return Response({"detail": "Profile not found for this user."}, status=404)
 
     def get(self, request):
         user = request.user
@@ -98,11 +128,42 @@ import requests
 class StudentStatsView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def patch(self, request):
+        try:
+            profile = request.user.student_profile
+            if "portfolio_link" in request.data:
+                profile.portfolio_link = request.data["portfolio_link"]
+                profile.save()
+            return Response({"detail": "Profile updated successfully.", "portfolio_link": profile.portfolio_link})
+        except StudentProfile.DoesNotExist:
+            return Response({"detail": "Profile not found for this user."}, status=404)
+
     def get(self, request):
         try:
             profile = request.user.student_profile
         except StudentProfile.DoesNotExist:
             return Response({"detail": "Profile not found"}, status=404)
+            
+        # Auto-sync missing profile name from Hackathon registrations
+        if not profile.name:
+            from .models import HackathonRegistration
+            # Check if leader
+            leader_reg = HackathonRegistration.objects.filter(leader_roll__iexact=profile.register_number).first()
+            if leader_reg and leader_reg.leader_name:
+                profile.name = leader_reg.leader_name.strip()
+                profile.save(update_fields=['name'])
+            else:
+                # Check if member
+                all_regs = HackathonRegistration.objects.all()
+                for reg in all_regs:
+                    for m in reg.team_members:
+                        if m.get('roll', '').strip().upper() == profile.register_number.upper():
+                            if m.get('name') and m.get('name').strip():
+                                profile.name = m.get('name').strip()
+                                profile.save(update_fields=['name'])
+                                break
+                    if profile.name:
+                        break
 
         stats = {
             "github_repos": "N/A",
@@ -127,6 +188,7 @@ class StudentStatsView(APIView):
                 res = requests.get(f"https://api.github.com/users/{github_user}", timeout=5)
                 if res.status_code == 200:
                     stats["github_repos"] = res.json().get("public_repos", 0)
+                    profile.github_repos_count = str(stats["github_repos"])
             except Exception:
                 pass
 
@@ -150,6 +212,7 @@ class StudentStatsView(APIView):
                     # acSubmissionNum is a list of dicts. The first one is "All" difficulty.
                     count = data['data']['matchedUser']['submitStats']['acSubmissionNum'][0]['count']
                     stats["leetcode_solved"] = count
+                    profile.leetcode_solved_count = str(count)
             except Exception:
                 pass
 
@@ -165,9 +228,31 @@ class StudentStatsView(APIView):
                     data = res.json()
                     models = data.get("models", [])
                     stats["hackerrank_badges"] = len(models)
+                    profile.hackerrank_badges_count = str(stats["hackerrank_badges"])
             except Exception:
                 pass
 
+        # HackerEarth
+        hackerearth_user = extract_username(profile.hackerearth_id)
+        if hackerearth_user:
+            try:
+                res = requests.get(
+                    f"https://www.hackerearth.com/@{hackerearth_user}/",
+                    headers=headers, timeout=5
+                )
+                if res.status_code == 200:
+                    from bs4 import BeautifulSoup
+                    soup = BeautifulSoup(res.text, 'html.parser')
+                    problems_solved = soup.find('div', class_='problems-solved')
+                    if problems_solved:
+                        count = problems_solved.find('span', class_='weight-700')
+                        if count:
+                            stats["hackerearth_count"] = count.text.strip()
+                            profile.hackerearth_problems_count = str(stats["hackerearth_count"])
+            except Exception:
+                pass
+
+        profile.save()
         return Response(stats)
 
 from rest_framework import generics
@@ -398,6 +483,7 @@ class StaffStudentStatsView(APIView):
                 res = requests.get(f"https://api.github.com/users/{github_user}", timeout=5)
                 if res.status_code == 200:
                     stats["github_repos"] = res.json().get("public_repos", 0)
+                    profile.github_repos_count = str(stats["github_repos"])
             except Exception:
                 pass
 
@@ -421,6 +507,7 @@ class StaffStudentStatsView(APIView):
                     submissions = data.get("data", {}).get("matchedUser", {}).get("submitStats", {}).get("acSubmissionNum", [])
                     if submissions:
                         stats["leetcode_solved"] = submissions[0].get("count", 0)
+                        profile.leetcode_solved_count = str(stats["leetcode_solved"])
             except Exception:
                 pass
 
@@ -434,6 +521,7 @@ class StaffStudentStatsView(APIView):
                 if res.status_code == 200:
                     models = res.json().get("models", [])
                     stats["hackerrank_badges"] = len(models)
+                    profile.hackerrank_badges_count = str(stats["hackerrank_badges"])
             except Exception:
                 pass
                 
@@ -453,13 +541,25 @@ class StaffStudentStatsView(APIView):
                         count = problems_solved.find('span', class_='weight-700')
                         if count:
                             stats["hackerearth_count"] = count.text.strip()
+                            profile.hackerearth_problems_count = str(stats["hackerearth_count"])
             except Exception:
                 pass
 
+        profile.save()
         return Response(stats)
 
 class ExportStudentDataView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        try:
+            profile = request.user.student_profile
+            if "portfolio_link" in request.data:
+                profile.portfolio_link = request.data["portfolio_link"]
+                profile.save()
+            return Response({"detail": "Profile updated successfully.", "portfolio_link": profile.portfolio_link})
+        except StudentProfile.DoesNotExist:
+            return Response({"detail": "Profile not found for this user."}, status=404)
 
     def get(self, request):
         if not hasattr(request.user, 'staff_profile'):
@@ -722,7 +822,333 @@ class ResetPasswordView(APIView):
 class GalleryEventListView(APIView):
     permission_classes = [AllowAny]
 
+    def patch(self, request):
+        try:
+            profile = request.user.student_profile
+            if "portfolio_link" in request.data:
+                profile.portfolio_link = request.data["portfolio_link"]
+                profile.save()
+            return Response({"detail": "Profile updated successfully.", "portfolio_link": profile.portfolio_link})
+        except StudentProfile.DoesNotExist:
+            return Response({"detail": "Profile not found for this user."}, status=404)
+
     def get(self, request):
         events = GalleryEvent.objects.all()
         serializer = GalleryEventSerializer(events, many=True)
         return Response(serializer.data)
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.db.models import Q
+from .models import HackathonRegistration, HackathonSettings
+
+class EligibleHackathonStudentsView(APIView):
+    def get(self, request):
+        # Find all already registered roll numbers
+        all_registrations = HackathonRegistration.objects.all()
+        registered_rolls = set(reg.leader_roll.strip().upper() for reg in all_registrations if reg.leader_roll)
+        for reg in all_registrations:
+            for member in reg.team_members:
+                if member.get('roll'):
+                    registered_rolls.add(member.get('roll').strip().upper())
+
+        # Fetch 2nd year IT students
+        students = StudentProfile.objects.filter(student_class__year__name='II')
+        data = []
+        for student in students:
+            if student.register_number:
+                roll = student.register_number.strip().upper()
+                if roll not in registered_rolls:
+                    data.append({
+                        "roll": student.register_number,
+                        "name": student.name
+                    })
+        return Response(data, status=status.HTTP_200_OK)
+
+class AvailableScenariosView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        from collections import Counter
+        from .models import HackathonSettings
+        
+        settings = HackathonSettings.get_settings()
+        
+        # Get all allocated scenarios
+        all_registrations = HackathonRegistration.objects.all()
+        total_teams = all_registrations.count()
+        
+        is_full = False
+        available = []
+        
+        if not settings.is_registration_open or total_teams >= settings.max_total_teams:
+            is_full = True
+        else:
+            allocated = [reg.scenario_allocated for reg in all_registrations if reg.scenario_allocated]
+            counts = Counter(allocated)
+            
+            for i in range(1, 6):
+                scenario_name = f"SCENARIO 0{i}"
+                max_for_scenario = settings.get_max_teams_for_scenario(scenario_name)
+                if counts.get(scenario_name, 0) < max_for_scenario:
+                    available.append(scenario_name)
+                    
+            if len(available) == 0:
+                is_full = True
+                
+        return Response({
+            "is_full": is_full, 
+            "is_registration_open": settings.is_registration_open,
+            "available_scenarios": available
+        }, status=status.HTTP_200_OK)
+
+class HackathonRegisterView(APIView):
+    def post(self, request):
+        data = request.data
+        leader_roll = data.get('leader_roll', '').strip().upper()
+        
+        # Check if leader_roll already registered
+        if HackathonRegistration.objects.filter(leader_roll=leader_roll).exists():
+            return Response({"error": "This leader roll number is already registered for a team."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if any member roll already registered as leader or member
+        member_rolls = [m.get('roll', '').strip().upper() for m in data.get('members', []) if m.get('roll', '').strip()]
+        
+        # Simple check for member duplicates across all registrations
+        # A more robust check would check every JSON member
+        all_registrations = HackathonRegistration.objects.all()
+        registered_rolls = set(reg.leader_roll for reg in all_registrations)
+        for reg in all_registrations:
+            for member in reg.team_members:
+                registered_rolls.add(member.get('roll', '').strip().upper())
+                
+        for mr in member_rolls:
+            if mr in registered_rolls:
+                return Response({"error": f"Roll number {mr} is already part of a registered team."}, status=status.HTTP_400_BAD_REQUEST)
+                
+        if leader_roll in registered_rolls:
+            return Response({"error": f"Roll number {leader_roll} is already part of a registered team."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from .models import HackathonSettings
+        settings = HackathonSettings.get_settings()
+        
+        if not settings.is_registration_open:
+            return Response({"error": "Registration is currently closed."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if all_registrations.count() >= settings.max_total_teams:
+            return Response({"error": "The hackathon has reached its maximum total team limit. Registration is full."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        scenario_allocated = data.get('scenario_allocated', '').strip()
+        if scenario_allocated:
+            max_for_scenario = settings.get_max_teams_for_scenario(scenario_allocated)
+            allocated_count = HackathonRegistration.objects.filter(scenario_allocated=scenario_allocated).count()
+            if allocated_count >= max_for_scenario:
+                return Response({"error": f"{scenario_allocated} has reached its maximum capacity of {max_for_scenario} teams. Please refresh to see available scenarios and spin again."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        leader_name = data.get('leader_name', '')
+        members_data = data.get('members', [])
+        
+        registration = HackathonRegistration.objects.create(
+            team_name=data.get('team_name', ''),
+            leader_roll=leader_roll,
+            leader_name=leader_name,
+            team_members=members_data,
+            scenario_allocated=data.get('scenario_allocated', ''),
+            is_confirmed=data.get('is_confirmed', True)
+        )
+        
+        # Update names in StudentProfile
+        if leader_name.strip():
+            leader_profile = StudentProfile.objects.filter(register_number=leader_roll).first()
+            if leader_profile:
+                leader_profile.name = leader_name.strip()
+                leader_profile.save(update_fields=['name'])
+                
+        for m in members_data:
+            m_roll = m.get('roll', '').strip().upper()
+            m_name = m.get('name', '').strip()
+            if m_roll and m_name:
+                m_profile = StudentProfile.objects.filter(register_number=m_roll).first()
+                if m_profile:
+                    m_profile.name = m_name
+                    m_profile.save(update_fields=['name'])
+
+        # --- Email Sending Logic Start ---
+        try:
+            recipients = set()
+            
+            # Leader email
+            leader_profile = StudentProfile.objects.filter(register_number=leader_roll).first()
+            if leader_profile and leader_profile.official_email:
+                recipients.add(leader_profile.official_email)
+                
+            # Members emails
+            for m in members_data:
+                m_roll = m.get('roll', '').strip().upper()
+                if m_roll:
+                    m_profile = StudentProfile.objects.filter(register_number=m_roll).first()
+                    if m_profile and m_profile.official_email:
+                        recipients.add(m_profile.official_email)
+                        
+            # Add COMMON_EMAILS
+            from django.conf import settings as django_settings
+            if hasattr(django_settings, 'COMMON_EMAILS'):
+                for em in django_settings.COMMON_EMAILS:
+                    recipients.add(em)
+            
+            if recipients:
+                from django.core.mail import EmailMultiAlternatives
+                
+                team_name = data.get('team_name', '')
+                scenario_allocated = data.get('scenario_allocated', '')
+                
+                members_html = ""
+                for m in members_data:
+                    m_name = m.get('name', 'N/A')
+                    m_roll = m.get('roll', 'N/A')
+                    members_html += f"""
+                    <li style="padding: 8px 0; border-bottom: 1px solid #f9fafb;">
+                        <span style="color: #6b7280; font-size: 14px; display: inline-block; width: 100px;">Member:</span>
+                        <span style="font-weight: 500; font-size: 15px;">{m_name} ({m_roll})</span>
+                    </li>
+                    """
+                
+                html_content = f"""
+                <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #f3f4f6; border-radius: 12px; overflow: hidden; background-color: #ffffff; color: #1B1C1C;">
+                    <div style="background-color: #10B981; padding: 24px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700;">Hackathon Registration Successful!</h1>
+                    </div>
+                    
+                    <div style="padding: 32px 24px;">
+                        <p style="font-size: 16px; line-height: 1.6; margin-top: 0;">Hello <strong>{team_name}</strong>,</p>
+                        <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">
+                            Congratulations! Your team has successfully registered for the Hackathon. 
+                        </p>
+                        
+                        <div style="background-color: #fff7f3; border: 1px solid #fed7aa; border-radius: 8px; padding: 16px; margin: 24px 0;">
+                            <p style="margin: 0 0 8px 0; font-size: 14px; color: #ea580c; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Scenario Allocated</p>
+                            <p style="margin: 0; font-size: 18px; font-weight: 700; color: #1B1C1C;">{scenario_allocated}</p>
+                        </div>
+
+                        <h3 style="font-size: 16px; font-weight: 600; border-bottom: 1px solid #f3f4f6; padding-bottom: 8px; margin-top: 24px;">Team Details</h3>
+                        <ul style="list-style-type: none; padding: 0; margin: 0;">
+                            <li style="padding: 8px 0; border-bottom: 1px solid #f9fafb;">
+                                <span style="color: #6b7280; font-size: 14px; display: inline-block; width: 100px;">Leader:</span>
+                                <span style="font-weight: 500; font-size: 15px;">{leader_name} ({leader_roll})</span>
+                            </li>
+                            {members_html}
+                        </ul>
+
+                        <div style="margin-top: 32px; padding: 16px; background-color: #f9fafb; border-radius: 8px;">
+                            <p style="margin: 0; font-size: 14px; color: #4b5563; font-weight: 500;">
+                                <strong style="color: #F46B24;">Next Steps:</strong> We are now waiting for your presentation (PPT) submission. Please ensure your team leader uploads the PPT via the student profile before the deadline.
+                            </p>
+                        </div>
+                        
+                        <p style="font-size: 16px; line-height: 1.6; color: #1B1C1C; margin-top: 32px; font-weight: 500;">
+                            All the best,<br>
+                            Infobee - IT Student Association
+                        </p>
+                    </div>
+                    
+                    <div style="background-color: #f9fafb; padding: 16px; text-align: center; border-top: 1px solid #f3f4f6;">
+                        <p style="font-size: 12px; color: #9ca3af; margin: 0;">
+                            This is an automated email. Please do not reply directly to this message.
+                        </p>
+                    </div>
+                </div>
+                """
+                
+                subject = f"Hackathon Registration Confirmed - {team_name}"
+                text_content = f"Registration successful for {team_name}. Scenario allocated: {scenario_allocated}. Next step: upload PPT."
+                email_msg = EmailMultiAlternatives(subject, text_content, getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'drmcetit2025@gmail.com'), list(recipients))
+                email_msg.attach_alternative(html_content, "text/html")
+                email_msg.send(fail_silently=True)
+        except Exception as e:
+            print("Error sending hackathon registration email:", e)
+        # --- Email Sending Logic End ---
+
+        return Response({"message": "Registration successful", "id": registration.hackathon_id}, status=status.HTTP_201_CREATED)
+
+
+class StudentHackathonDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
+    from rest_framework.parsers import MultiPartParser, FormParser
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request):
+        try:
+            profile = request.user.student_profile
+            roll_number = profile.register_number.strip().upper()
+            
+            # Find if the user is a leader
+            registration = HackathonRegistration.objects.filter(leader_roll=roll_number).first()
+            is_leader = True
+            
+            # If not leader, check if they are a member
+            if not registration:
+                is_leader = False
+                all_regs = HackathonRegistration.objects.all()
+                for reg in all_regs:
+                    members = reg.team_members
+                    if isinstance(members, list):
+                        for m in members:
+                            if m.get('roll', '').strip().upper() == roll_number:
+                                registration = reg
+                                break
+                    if registration:
+                        break
+                        
+            if not registration:
+                return Response({"registered": False})
+                
+            settings = HackathonSettings.objects.first()
+            is_ppt_time_end = settings.is_ppt_time_end if settings else False
+
+            return Response({
+                "registered": True,
+                "is_ppt_time_end": is_ppt_time_end,
+                "is_leader": is_leader,
+                "team_name": registration.team_name,
+                "leader_name": registration.leader_name,
+                "leader_roll": registration.leader_roll,
+                "scenario_allocated": registration.scenario_allocated,
+                "team_members": registration.team_members,
+                "is_round_1_selected": registration.is_round_1_selected,
+                "is_round_2_selected": registration.is_round_2_selected,
+                "is_round_3_selected": registration.is_round_3_selected,
+                "is_winner": registration.is_winner,
+                "ppt_file": request.build_absolute_uri(registration.ppt_file.url) if registration.ppt_file else None
+            })
+            
+        except StudentProfile.DoesNotExist:
+            return Response({"detail": "Profile not found."}, status=404)
+
+    def post(self, request):
+        try:
+            profile = request.user.student_profile
+            roll_number = profile.register_number.strip().upper()
+            
+            settings = HackathonSettings.objects.first()
+            if settings and settings.is_ppt_time_end:
+                return Response({"error": "PPT submission time has ended."}, status=403)
+
+            registration = HackathonRegistration.objects.filter(leader_roll=roll_number).first()
+            if not registration:
+                return Response({"error": "Only the team leader can upload files."}, status=403)
+                
+            file_obj = request.FILES.get('ppt_file')
+            if not file_obj:
+                return Response({"error": "No file provided."}, status=400)
+                
+            registration.ppt_file = file_obj
+            registration.save()
+            
+            return Response({
+                "message": "File uploaded successfully.",
+                "ppt_file": request.build_absolute_uri(registration.ppt_file.url)
+            })
+            
+        except StudentProfile.DoesNotExist:
+            return Response({"detail": "Profile not found."}, status=404)

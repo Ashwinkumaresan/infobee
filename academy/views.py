@@ -844,6 +844,8 @@ from django.db.models import Q
 from .models import HackathonRegistration, HackathonSettings
 
 class EligibleHackathonStudentsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request):
         # Find all already registered roll numbers
         all_registrations = HackathonRegistration.objects.all()
@@ -867,7 +869,7 @@ class EligibleHackathonStudentsView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 class AvailableScenariosView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         from collections import Counter
@@ -904,6 +906,8 @@ class AvailableScenariosView(APIView):
         }, status=status.HTTP_200_OK)
 
 class HackathonRegisterView(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request):
         data = request.data
         leader_roll = data.get('leader_roll', '').strip().upper()

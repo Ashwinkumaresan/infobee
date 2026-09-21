@@ -1146,6 +1146,9 @@ class StudentHackathonDetailsView(APIView):
             if not file_obj:
                 return Response({"error": "No file provided."}, status=400)
                 
+            if file_obj.size > 5 * 1024 * 1024:
+                return Response({"error": "File size exceeds the 5MB limit."}, status=400)
+                
             registration.ppt_file = file_obj
             registration.save()
             
@@ -1156,3 +1159,17 @@ class StudentHackathonDetailsView(APIView):
             
         except StudentProfile.DoesNotExist:
             return Response({"detail": "Profile not found."}, status=404)
+
+class RegisteredHackathonTeamsView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        teams = HackathonRegistration.objects.all().order_by('created_at')
+        data = []
+        for team in teams:
+            data.append({
+                "team_name": team.team_name,
+                "leader_name": team.leader_name,
+                "scenario_allocated": team.scenario_allocated
+            })
+        return Response(data)

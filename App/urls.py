@@ -30,7 +30,7 @@ from academy.views import (
     ForgotPasswordView, VerifyOTPView, ResetPasswordView,
     GalleryEventListView,
     EligibleHackathonStudentsView, HackathonRegisterView, AvailableScenariosView,
-    StudentHackathonDetailsView
+    StudentHackathonDetailsView, RegisteredHackathonTeamsView
 )
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -63,6 +63,7 @@ urlpatterns = [
     path('api/hackathon/register/', HackathonRegisterView.as_view(), name='hackathon-register'),
     path('api/hackathon/available-scenarios/', AvailableScenariosView.as_view(), name='hackathon-available-scenarios'),
     path('api/hackathon/my-team/', StudentHackathonDetailsView.as_view(), name='hackathon-my-team'),
+    path('api/hackathon/registered-teams/', RegisteredHackathonTeamsView.as_view(), name='hackathon-registered-teams'),
 ]
 
 from django.conf import settings

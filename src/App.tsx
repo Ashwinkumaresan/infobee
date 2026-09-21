@@ -9,6 +9,7 @@ import PortfolioLanding from './pages/portfolio/Portfolio';
 import Hackathon from './pages/hackathon/Hackathon';
 import Registration from './pages/hackathon/Registration';
 import ScenarioDetails from './pages/hackathon/ScenarioDetails';
+import RegisteredTeams from './pages/hackathon/RegisteredTeams';
 import Footer from './components/Footer';
 import { CalendarModal, JoinModal } from './components/Modals';
 import AdminPortal from './components/AdminPortal';
@@ -98,7 +99,7 @@ export default function App() {
     if (currentPage !== 'home' && currentPage !== 'hackathon') return;
     const handleScroll = () => {
       const sections = currentPage === 'hackathon'
-        ? ['challenge', 'round1', 'round2', 'round3', 'faq', 'register']
+        ? ['scenarios', 'challenge', 'round1', 'round2', 'round3', 'faq', 'register']
         : ['home', 'events', 'about', 'gallery', 'programs', 'contact'];
       const scrollPosition = window.scrollY + 120;
 
@@ -251,6 +252,7 @@ export default function App() {
           <Route path="/hackathon" element={<Hackathon />} />
           <Route path="/hackathon/register" element={isLoggedIn ? <Registration /> : <Navigate to="/student/signin" state={{ from: "/hackathon/register" }} replace />} />
           <Route path="/hackathon/scenario/:id" element={<ScenarioDetails />} />
+          <Route path="/hackathon/teams" element={<RegisteredTeams />} />
           <Route path="/" element={<Navigate to="/hackathon" replace />} />
           
           {/* 

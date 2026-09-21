@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Code, Terminal, Database, Users, Shield, Zap, Target, HelpCircle, ChevronRight, X, User } from 'lucide-react';
+import { Code, Terminal, Database, Users, Shield, Zap, Target, HelpCircle, ChevronRight, X, User, Trophy, Medal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import { API_URL } from '../../api';
@@ -175,10 +175,98 @@ export default function Hackathon() {
           </div>
         </div>
       </section>
+
+      {/* 1.5 SECTION - PRIZES */}
+      <section className="w-full bg-surface-container-lowest py-space-3xl relative overflow-hidden" id="prizes">
+        {/* Abstract background elements */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-brand-orange/5 blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-blue-500/5 blur-3xl pointer-events-none"></div>
+        
+        <div className="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-gutter relative z-10">
+          <div className="flex flex-col items-center text-center max-w-2xl mx-auto mb-space-2xl">
+            <span className="font-label-eyebrow text-label-eyebrow uppercase text-primary-container tracking-widest mb-space-xs">PRIZE POOL</span>
+            <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-on-surface tracking-tight mb-space-sm">
+              Rewards for Excellence
+            </h2>
+            <p className="font-body-lead text-body-lead text-secondary">
+              Cash prizes for the top three teams that build the most innovative, scalable, and robust solutions.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter relative mt-space-2xl">
+            {/* 1st Place */}
+            <div className="bg-surface-container-lowest rounded-2xl p-space-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-space-lg">
+                  <span className="font-display-hero text-[56px] leading-none font-extrabold text-brand-orange/30 group-hover:text-brand-orange transition-colors">1ST</span>
+                  <span className="px-3 py-1 rounded-full bg-brand-orange/10 text-brand-orange font-label-sm text-label-sm font-bold tracking-wider flex items-center gap-1.5">
+                    <Trophy size={14} strokeWidth={2.5} />
+                    WINNER
+                  </span>
+                </div>
+                <span className="font-label-eyebrow text-label-eyebrow uppercase text-brand-orange font-bold tracking-widest block mb-1">CASH PRIZE</span>
+                <h3 className="font-headline-md text-[2.5rem] font-bold text-on-surface mb-2">₹1,000</h3>
+                <p className="font-body-sm text-body-sm text-secondary mb-space-lg">
+                  Awarded to the top performing team with the most innovative and robust product build.
+                </p>
+              </div>
+              <div className="pt-space-md border-t border-surface-container flex items-center justify-between font-label-sm text-label-sm">
+                <span className="text-secondary">PERKS</span>
+                <span className="text-on-surface font-bold">Winner's Certificate</span>
+              </div>
+            </div>
+
+            {/* 2nd Place */}
+            <div className="bg-surface-container-lowest rounded-2xl p-space-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-space-lg">
+                  <span className="font-display-hero text-[56px] leading-none font-extrabold text-gray-500/20 group-hover:text-gray-500 transition-colors">2ND</span>
+                  <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 font-label-sm text-label-sm font-bold tracking-wider flex items-center gap-1.5">
+                    <Medal size={14} strokeWidth={2.5} />
+                    RUNNER UP
+                  </span>
+                </div>
+                <span className="font-label-eyebrow text-label-eyebrow uppercase text-gray-500 font-bold tracking-widest block mb-1">CASH PRIZE</span>
+                <h3 className="font-headline-md text-[2.5rem] font-bold text-on-surface mb-2">₹750</h3>
+                <p className="font-body-sm text-body-sm text-secondary mb-space-lg">
+                  Awarded to the second best team demonstrating excellent technical execution and design.
+                </p>
+              </div>
+              <div className="pt-space-md border-t border-surface-container flex items-center justify-between font-label-sm text-label-sm">
+                <span className="text-secondary">PERKS</span>
+                <span className="text-on-surface font-bold">Certificate of Excellence</span>
+              </div>
+            </div>
+
+            {/* 3rd Place */}
+            <div className="bg-surface-container-lowest rounded-2xl p-space-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-space-lg">
+                  <span className="font-display-hero text-[56px] leading-none font-extrabold text-[#CD7F32]/30 group-hover:text-[#CD7F32] transition-colors">3RD</span>
+                  <span className="px-3 py-1 rounded-full bg-[#CD7F32]/10 text-[#a36528] font-label-sm text-label-sm font-bold tracking-wider flex items-center gap-1.5">
+                    <Medal size={14} strokeWidth={2.5} />
+                    SECOND RUNNER UP
+                  </span>
+                </div>
+                <span className="font-label-eyebrow text-label-eyebrow uppercase text-[#CD7F32] font-bold tracking-widest block mb-1">CASH PRIZE</span>
+                <h3 className="font-headline-md text-[2.5rem] font-bold text-on-surface mb-2">₹500</h3>
+                <p className="font-body-sm text-body-sm text-secondary mb-space-lg">
+                  Awarded to the third best team for their solid technical contribution and idea.
+                </p>
+              </div>
+              <div className="pt-space-md border-t border-surface-container flex items-center justify-between font-label-sm text-label-sm">
+                <span className="text-secondary">PERKS</span>
+                <span className="text-on-surface font-bold">Certificate of Excellence</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 2. SECTION 2 — THE CHALLENGE */}
       <section className="w-full bg-surface-container-low/50 py-space-3xl" id="challenge">
         <div className="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-gutter">
-          <div className="flex flex-col items-start max-w-2xl mb-space-2xl">
+          <div id="scenarios" className="flex flex-col items-start max-w-2xl mb-space-2xl">
             <span className="font-label-eyebrow text-label-eyebrow uppercase text-primary-container tracking-widest mb-space-xs">THE CHALLENGE</span>
             <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-on-surface tracking-tight mb-space-sm">
               Start With a Scenario. End With a Product.

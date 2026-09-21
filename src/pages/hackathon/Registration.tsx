@@ -33,6 +33,7 @@ export default function Registration() {
 
   // Wheel state
   const [wheelRotation, setWheelRotation] = useState(0);
+  const [focusedMemberIndex, setFocusedMemberIndex] = useState<number | null>(null);
 
   // Derived state
   const filledMembersCount = members.filter(m => m.name.trim() && m.roll.trim()).length;
@@ -435,11 +436,33 @@ export default function Registration() {
                                 : 'border-brand-border bg-white text-brand-navy focus:border-brand-navy focus:ring-brand-navy'
                             }`}
                             placeholder="7276********"
-                            list="eligible-students-list"
                             type="text"
                             value={members[idx].roll}
                             onChange={(e) => handleMemberChange(idx, 'roll', e.target.value)}
+                            onFocus={() => setFocusedMemberIndex(idx)}
+                            onBlur={() => setTimeout(() => setFocusedMemberIndex(null), 200)}
                           />
+                          {focusedMemberIndex === idx && members[idx].roll.length > 0 && (
+                            <ul className="absolute top-[4.5rem] left-0 w-full mt-1 bg-white border border-gray-200 shadow-xl rounded-md max-h-48 overflow-y-auto z-[100]">
+                              {eligibleStudents
+                                .filter(s => s.roll.includes(members[idx].roll.toUpperCase()))
+                                .slice(0, 10)
+                                .map(s => (
+                                  <li
+                                    key={s.roll}
+                                    className="px-3 py-2 cursor-pointer hover:bg-gray-50 text-xs font-poppins text-brand-navy border-b border-gray-100 last:border-0"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault(); // Prevent onBlur from firing before click
+                                      handleMemberChange(idx, 'roll', s.roll);
+                                      if (s.name) handleMemberChange(idx, 'name', s.name);
+                                      setFocusedMemberIndex(null);
+                                    }}
+                                  >
+                                    <span className="font-bold">{s.roll}</span> - {s.name}
+                                  </li>
+                                ))}
+                            </ul>
+                          )}
                           {isRollInvalid(members[idx].roll) && (
                             <div className="flex items-center gap-1 mt-1.5 text-red-600">
                               <AlertCircle size={12} />
@@ -487,12 +510,6 @@ export default function Registration() {
                   <span>→</span>
                 </button>
               </div>
-
-              <datalist id="eligible-students-list">
-                {eligibleStudents.map(s => (
-                  <option key={s.roll} value={s.roll}>{s.name}</option>
-                ))}
-              </datalist>
             </form>
           </div>
         )}

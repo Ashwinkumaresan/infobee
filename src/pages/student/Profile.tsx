@@ -49,7 +49,7 @@ export default function StudentProfile() {
     document.cookie = 'refresh_token=; path=/; max-age=0';
     localStorage.removeItem('user_role');
     toast.success('Logged out successfully');
-    navigate('/');
+    window.location.href = '/';
   };
 
   useEffect(() => {
@@ -200,6 +200,11 @@ export default function StudentProfile() {
     const validExtensions = ['application/pdf', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
     if (!validExtensions.includes(file.type)) {
       toast.error('Only PDF and PPT/PPTX files are allowed.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size exceeds the 5MB limit.');
       return;
     }
 
@@ -452,7 +457,7 @@ export default function StudentProfile() {
                         </div>
                         {hackathonData.is_leader && !hackathonData.is_ppt_time_end && (
                           <label className="cursor-pointer bg-white border border-[#F46B24] text-[#F46B24] text-xs font-semibold px-4 py-2 rounded hover:bg-orange-50 transition-colors">
-                            {uploadingPpt ? 'Uploading...' : 'Re-upload PPT'}
+                            {uploadingPpt ? 'Uploading...' : 'Re-upload PPT (Max 5MB)'}
                             <input type="file" className="hidden" accept=".ppt,.pptx,.pdf" onChange={handlePptUpload} disabled={uploadingPpt} />
                           </label>
                         )}
@@ -468,7 +473,7 @@ export default function StudentProfile() {
                                 <>
                                   <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Uploading...
                                 </>
-                              ) : 'Upload Presentation'}
+                              ) : 'Upload Presentation (Max 5MB)'}
                               <input type="file" className="hidden" accept=".ppt,.pptx,.pdf" onChange={handlePptUpload} disabled={uploadingPpt} />
                             </label>
                           </>

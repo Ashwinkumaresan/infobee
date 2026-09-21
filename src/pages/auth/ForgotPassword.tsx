@@ -187,10 +187,16 @@ export default function ForgotPassword() {
       <div className="w-full max-w-[440px] flex flex-col items-center relative z-10">
         <div className="w-full bg-surface-container-lowest shadow-xl rounded-2xl p-8 md:p-10 transition-stage">
           <div className="flex justify-center mb-8">
-            <div className="w-16 h-16 bg-primary-container border-2 border-outline-variant rounded-2xl flex items-center justify-center relative shadow-sm">
-              <div className="absolute w-2 h-2 bg-white rounded-full top-2 right-2" />
-              <div className="absolute w-2 h-2 bg-white rounded-full bottom-2 left-2" />
-              <span className="font-mono text-on-primary font-bold text-2xl tracking-tighter">IF</span>
+            <div className="flex items-center space-x-3">
+              <img src="/Logo.jpg" alt="Infobee Logo" className="w-14 h-14" />
+              <div className="flex flex-col text-left">
+                <span className="font-display text-2xl font-bold tracking-tight text-on-surface leading-none">
+                  Infobee
+                </span>
+                <span className="text-[10px] tracking-wider text-secondary leading-none mt-1 font-medium uppercase">
+                  IT Association • DR. MCET
+                </span>
+              </div>
             </div>
           </div>
 

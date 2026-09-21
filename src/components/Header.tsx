@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Award, ChevronRight, Sparkles, LogIn, ChevronDown } from 'lucide-react';
 import { API_URL } from '../api';
 
@@ -15,6 +15,8 @@ interface HeaderProps {
 }
 
 export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLoggedIn, activeSection, currentPage = 'home', onNavigate }: HeaderProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
@@ -31,12 +33,32 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
         { name: 'ROUND 3', href: '#round3' },
       ]
     },
+    {
+      name: 'SCENARIOS',
+      href: '#scenarios',
+      subItems: [
+        { name: 'SCENARIO 1', href: '/hackathon/scenario/1' },
+        { name: 'SCENARIO 2', href: '/hackathon/scenario/2' },
+        { name: 'SCENARIO 3', href: '/hackathon/scenario/3' },
+        { name: 'SCENARIO 4', href: '/hackathon/scenario/4' },
+        { name: 'SCENARIO 5', href: '/hackathon/scenario/5' },
+      ]
+    },
     { name: 'FAQ', href: '#faq' },
   ];
   
   if (isRegistrationOpen) {
     navItems.push({ name: 'REGISTER', href: '#register' });
   }
+  
+  navItems.push({ name: 'TEAMS', href: '/hackathon/teams' });
+
+  const isItemActive = (href: string) => {
+    if (href.startsWith('/')) {
+      return location.pathname === href;
+    }
+    return activeSection === href.substring(1) && (location.pathname === '/' || location.pathname === '/hackathon');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,9 +97,11 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
 
     if (href.startsWith('#')) {
       const sectionId = href.substring(1);
-      if (onNavigate) {
+      if (onNavigate && sectionId) {
         onNavigate(currentPage, sectionId);
       }
+    } else if (href.startsWith('/')) {
+      navigate(href);
     }
   };
 
@@ -108,7 +132,7 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => {
-              const isActive = activeSection === item.href.substring(1) || item.subItems?.some(sub => activeSection === sub.href.substring(1));
+              const isActive = isItemActive(item.href) || item.subItems?.some(sub => isItemActive(sub.href));
               return (
                 <div key={item.name} className="relative group">
                   <a
@@ -155,14 +179,14 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
             {isLoggedIn ? (
               <Link
                 to={profileRoute}
-                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-wider px-5 py-2.5 uppercase shadow-sm transition-all hover:shadow-md transform hover:-translate-y-0.5"
+                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-wider px-5 py-2.5 uppercase shadow-sm transition-all hover:shadow-md transform hover:-translate-y-0.5 rounded-md"
               >
                 Profile
               </Link>
             ) : (
               <Link
                 to="/student/signin"
-                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-wider px-5 py-2.5 uppercase shadow-sm transition-all hover:shadow-md transform hover:-translate-y-0.5"
+                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold tracking-wider px-5 py-2.5 uppercase shadow-sm transition-all hover:shadow-md transform hover:-translate-y-0.5 rounded-md"
               >
                 Sign In
               </Link>
@@ -174,14 +198,14 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
             {isLoggedIn ? (
               <Link
                 to={profileRoute}
-                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-[10px] font-bold tracking-wider px-4 py-2 uppercase shadow-sm transition-all"
+                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-[10px] font-bold tracking-wider px-4 py-2 uppercase shadow-sm transition-all rounded-md"
               >
                 Profile
               </Link>
             ) : (
               <Link
                 to="/student/signin"
-                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-[10px] font-bold tracking-wider px-4 py-2 uppercase shadow-sm transition-all"
+                className="bg-brand-orange hover:bg-brand-orange-hover text-white text-[10px] font-bold tracking-wider px-4 py-2 uppercase shadow-sm transition-all rounded-md"
               >
                 Sign In
               </Link>
@@ -207,7 +231,7 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
           >
             <div className="px-4 pt-2 pb-6 space-y-3">
               {navItems.map((item) => {
-                const isActive = activeSection === item.href.substring(1) || item.subItems?.some(sub => activeSection === sub.href.substring(1));
+                const isActive = isItemActive(item.href) || item.subItems?.some(sub => isItemActive(sub.href));
                 return (
                   <div key={item.name} className="space-y-1">
                     <a

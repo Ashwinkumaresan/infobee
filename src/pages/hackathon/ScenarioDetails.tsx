@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Target, Briefcase, Download } from 'lucide-react';
+import { ArrowLeft, FileText, Briefcase, Download } from 'lucide-react';
 import { scenarios } from '../../data/scenarios';
 
 export default function ScenarioDetails() {
@@ -98,15 +98,15 @@ export default function ScenarioDetails() {
       <section className="flex-1 w-full bg-surface-container-lowest py-8 relative z-30">
         <div className="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
           <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
-                <Target size={24} />
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 shadow-sm flex items-center justify-center">
+                <FileText size={24} className="text-gray-700" strokeWidth={1.5} />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Abstract</h2>
+              <h2 className="font-display text-3xl font-bold text-gray-900 tracking-tight">Abstract</h2>
             </div>
             
             <div className="prose prose-lg prose-orange max-w-none text-gray-700 leading-relaxed space-y-6">
-              <p className="font-body-lg text-lg">
+              <p className="font-body-lg text-md">
                 {scenario.abstract}
               </p>
             </div>

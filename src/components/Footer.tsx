@@ -101,14 +101,8 @@ export default function Footer({ onNavClick, onCalendarClick, onPortalClick }: F
           </div>
           
           <div className="flex space-x-6 text-brand-grayMuted font-bold uppercase tracking-wider">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-orange transition-colors">
+            <a href="https://www.instagram.com/infobee_it?stkn=ZTJwczhpaGs4bWRz" target="_blank" rel="noopener noreferrer" className="hover:text-brand-orange transition-colors">
               INSTAGRAM
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-orange transition-colors">
-              LINKEDIN
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-orange transition-colors">
-              TWITTER
             </a>
           </div>
         </div>

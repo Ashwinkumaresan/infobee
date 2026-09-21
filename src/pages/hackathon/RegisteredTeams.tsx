@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Users, Layout, Shield } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { API_URL } from '../../api';
 
 interface Team {
@@ -13,9 +14,18 @@ export default function RegisteredTeams() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const round = searchParams.get('round');
 
   useEffect(() => {
-    fetch(`${API_URL}/hackathon/registered-teams/`)
+    setLoading(true);
+    let url = `${API_URL}/hackathon/registered-teams/`;
+    if (round) {
+      url += `?round=${round}`;
+    }
+    
+    fetch(url)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch teams');
         return res.json();
@@ -29,7 +39,7 @@ export default function RegisteredTeams() {
         setError('Unable to load registered teams at this time.');
         setLoading(false);
       });
-  }, []);
+  }, [round]);
 
   return (
     <div className="flex flex-col w-full text-on-surface bg-white min-h-screen pt-4 pb-6 relative overflow-hidden">
@@ -44,13 +54,13 @@ export default function RegisteredTeams() {
         <div className="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-tablet lg:px-gutter">
           <div className="flex flex-col items-start max-w-2xl mb-space-xl">
             <span className="font-label-eyebrow text-label-eyebrow uppercase text-[#F46B24] tracking-widest mb-space-xs">
-              HACKATHON TEAMS
+              {round ? `ROUND ${round} TEAMS` : 'HACKATHON TEAMS'}
             </span>
             <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-gray-900 tracking-tight mb-space-sm">
-              Registered Teams
+              {round === '2' ? 'Round 2 Shortlisted Teams' : round === '3' ? 'Round 3 Finalists' : 'Registered Teams'}
             </h2>
             <p className="font-body-lead text-body-lead text-gray-700">
-              Meet the brilliant minds taking on the Nexora'26 challenge.
+              {round ? `Meet the brilliant minds advancing to Round ${round} of the Nexora'26 challenge.` : "Meet the brilliant minds taking on the Nexora'26 challenge."}
             </p>
           </div>
 
@@ -80,10 +90,10 @@ export default function RegisteredTeams() {
               </div>
               
               <h3 className="font-display text-2xl md:text-3xl font-bold text-gray-900 mb-3 tracking-tight">
-                No Teams Registered Yet
+                {round ? 'Results Not Yet Released' : 'No Teams Registered Yet'}
               </h3>
               <p className="text-gray-500 max-w-md mx-auto text-lg leading-relaxed">
-                Be the first to step up! Registration is currently open and teams will appear here once they secure their spot.
+                {round ? `The shortlisted teams for Round ${round} will be announced soon. Stay tuned!` : 'Be the first to step up! Registration is currently open and teams will appear here once they secure their spot.'}
               </p>
             </div>
           ) : (

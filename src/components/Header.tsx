@@ -51,7 +51,15 @@ export default function Header({ onJoinClick, onAdminClick, isAdminMode, isLogge
     navItems.push({ name: 'REGISTER', href: '#register' });
   }
   
-  navItems.push({ name: 'TEAMS', href: '/hackathon/teams' });
+  navItems.push({ 
+    name: 'TEAMS', 
+    href: '/hackathon/teams',
+    subItems: [
+      { name: 'ALL TEAMS', href: '/hackathon/teams' },
+      { name: 'ROUND 2', href: '/hackathon/teams?round=2' },
+      { name: 'ROUND 3', href: '/hackathon/teams?round=3' },
+    ]
+  });
 
   const isItemActive = (href: string) => {
     if (href.startsWith('/')) {
